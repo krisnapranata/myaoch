@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MyAoCH - Kesiapan Bandara{% endblock %}</title>
+
+   <!-- Global Styles -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
+  
+  <!-- Conditional: Login Page -->
+  {% if "login" in request.path %}
+  <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  
+  {% endif %}
+  
+  <script src="{% static 'js/app.js' %}" defer></script>
+  {% block extra_css %}{% endblock %}
+
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- ✅ Navbar -->
+  {% include "includes/navbar.html" %}
+
+  <!-- ✅ Konten utama -->
+  <main class="container">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <!-- ✅ Footer -->
+  {% include "includes/footer.html" %}
+
+  <!-- ✅ Tambahan script -->
+  {% block extra_js %}
+  {% endblock %}
+</body>
+</html>

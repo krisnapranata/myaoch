@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Operator — MyAoCH{% endblock %}
+
+{% block content %}
+<h1>👷 Dashboard Operator — {{ request.user.unit.nama_unit }}</h1>
+
+<div class="toolbar">
+  <input type="text" id="searchInput" placeholder="🔍 Cari peralatan..." />
+  <button id="btnTambah">➕ Tambah Peralatan</button>
+  <button id="btnDashboardUmum">📊 Dashboard Umum</button>
+  <button id="btnHistory">🕓 Riwayat</button>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Peralatan</th>
+      <th>Kategori</th>
+      <th>Nilai Hari Ini</th>
+      <th>Status</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody id="peralatanTable">
+    {% for p in peralatan_list %}
+    <tr>
+      <td>{{ p.nama_peralatan }}</td>
+      <td>{{ p.kategori|default:"-" }}</td>
+      <td>
+        {% with nilai=p.nilai_hari_ini %}
+          {% if nilai %}
+            {{ nilai }}%
+          {% else %}
+            <em>Belum diinput</em>
+          {% endif %}
+        {% endwith %}
+      </td>
+      <td>
+        {% if p.status_verifikasi == "Final" %}
+          ✅ Final
+        {% elif p.status_verifikasi == "Diverifikasi SPV" %}
+          🟡 Diverifikasi SPV
+        {% elif p.status_verifikasi == "Draft" %}
+          ⏳ Menunggu Verifikasi
+        {% else %}
+          ❌ Ditolak
+        {% endif %}
+      </td>
+      <td>
+        <button class="btnInput" data-id="{{ p.id }}">📝 Input Nilai</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div id="chartUnitSection" style="margin-top:2rem;">
+  <h2>📈 Tren Kesiapan Unit — {{ request.user.unit.nama_unit }}</h2>
+  <canvas id="chartUnit"></canvas>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/chart.min.js' %}"></script>
+<script>
+  // Filter pencarian
+  document.getElementById('searchInput').addEventListener('input', function(){
+    const filter = this.value.toLowerCase();
+    document.querySelectorAll('#peralatanTable tr').forEach(tr => {
+      tr.style.display = tr.textContent.toLowerCase().includes(filter) ? '' : 'none';
+    });
+  });
+
+  // Tombol navigasi
+  document.getElementById("btnDashboardUmum").onclick = () => window.location.href = "/dashboard/";
+  document.getElementById("btnTambah").onclick = () => window.location.href = "/operator/tambah/";
+  document.getElementById("btnHistory").onclick = () => window.location.href = "/operator/history/";
+
+  // Chart unit readiness
+  const dataUnit = JSON.parse(document.getElementById('unitData').textContent);
+  const ctx = document.getElementById('chartUnit');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dataUnit.map(d => d.tanggal),
+      datasets: [{
+        label: 'Rata-rata Kesiapan',
+        data: dataUnit.map(d => d.nilai),
+        fill: true,
+      }]
+    },
+    options: { responsive:true, scales:{ y:{ beginAtZero:true, max:100 } } }
+  });
+</script>
+{{ unit_tren|json_script:"unitData" }}
+{% endblock %}

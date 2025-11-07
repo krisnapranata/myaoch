@@ -1,0 +1,105 @@
+.energy-wrapper {
+    margin-top: 15px;
+}
+
+.energy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 25px;
+}
+
+.energy-box {
+    background: white;
+    border-radius: 12px;
+    padding: 15px 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.energy-box-title {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 4px;
+}
+
+.energy-box-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.energy-small-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 22px;
+    margin-bottom: 8px;
+}
+
+.energy-explain {
+    background: #eef2ff;
+    padding: 15px 18px;
+    border-radius: 10px;
+    border-left: 4px solid #6366f1;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    line-height: 1.35rem;
+}
+
+.text-green { color: #10b981 !important; }
+.text-red { color: #ef4444 !important; }
+
+/* ✅ Chart card lebih kecil */
+.chart-card.full {
+    padding: 18px 22px;
+}
+
+.chart-card h2 {
+    font-size: 1.15rem;
+    margin-bottom: 8px;
+}
+
+/* ✅ Chart lebih rendah sesuai permintaan */
+#energyBarChart {
+    max-height: 220px !important;
+}
+
+
+/* ======================
+   ENERGY CHART – DESKTOP
+====================== */
+#energyBarChart,
+#energyChart7 {
+    width: 100% !important;
+    max-width: 100%;
+    height: 340px !important;   /* default desktop */
+    display: block;
+}
+
+/* ======================
+   RESPONSIVE – MOBILE
+====================== */
+@media (max-width: 600px) {
+    #energyBarChart,
+    #energyChart7 {
+        height: 220px !important;  /* ideal mobile */
+    }
+}
+
+@media (max-width: 600px) {
+    .energy-box {
+        padding: 12px 14px !important;
+    }
+}
+
+#energy7_kwh,
+#energy7_cost {
+    width: 100% !important;
+    height: 420px !important;   /* ✅ tinggi nyaman mobile */
+}
+
+@media (max-width: 600px) {
+    #energy7_kwh,
+    #energy7_cost {
+        height: 480px !important;  /* ✅ lebih tinggi di HP supaya tidak sempit */
+    }
+}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login Operator — MyAoCH x InJourney{% endblock %}
+
+{% block content %}
+<div class="login-full-bg">
+  <div class="overlay"></div>
+
+  <div class="login-container fade-in">
+    <div class="login-header">
+      
+
+      {% if request.user.is_authenticated %}
+        <h2>{{ request.user.unit.nama_unit }}</h2>
+      {% endif %}
+    </div>
+
+    <div class="login-card glass-effect">
+      <!-- Logo InJourney (varian putih transparan) -->
+      <img src="{% static 'img/injourney-logo-white.png' %}" 
+           alt="InJourney Logo" 
+           class="injourney-logo">
+      <h2>🔐 Login Portal</h2>
+
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <form method="post" class="login-form">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="username">👤 Username</label>
+          <input type="text" id="username" name="username" placeholder="Masukkan username Anda" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">🔑 Password</label>
+          <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required>
+        </div>
+
+        <button type="submit" class="btn-login">Login</button>
+      </form>
+
+      <p class="login-hint">💡 Gunakan akun operator sesuai unit kerja Anda.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

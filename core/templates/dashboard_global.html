@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/energy.css' %}">
+{% endblock %}
+
+{% block title %}Dashboard — MyAoCH{% endblock %}
+
+{% block content %}
+
+  <h1>📊 Dashboard Kesiapan Operasional</h1>
+  <!--<p id="lastUpdated" style="font-size: 0.8rem; color: gray; text-align: right;">Terakhir diperbarui: {{ now|date:"Y-M-D H:i:s" }}</p>-->
+
+  <!-- KPI Summary Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <h3>Overall Readiness</h3>
+      <p class="kpi-value" id="overall_readiness">{{ overall_readiness|floatformat:1 }}%</p>
+      <span id="kpi-statusku" class="kpi-status 
+        {% if overall_readiness >= 80 %}good{% elif overall_readiness >= 60 %}warning{% else %}bad{% endif %}">
+        {% if overall_readiness >= 80 %}✅ Optimal{% elif overall_readiness >= 60 %}⚠️ Cukup{% else %}<p id="kpi-statusku">❌ Rendah</p>{% endif %}
+      </span>
+    </div>
+    <div class="kpi-card">
+      <h3>Total Peralatan</h3>
+      <p class="kpi-value" id="totalPeralatan">{{ total_peralatan }}</p>
+      <span class="kpi-status neutral">Inventaris Aktif</span>
+    </div>
+    <div class="kpi-card">
+      <h3>Peralatan Bermasalah</h3>
+      <p class="kpi-value" id="peralatanBermasalah">{{ peralatan_kritis.count }}</p>
+      <span class="kpi-status bad">Perlu Tindakan</span>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Chart 1 -->
+    <div class="chart-card">
+      <h2>1️⃣ Rata-rata Kesiapan per Unit</h2>
+      <canvas id="unitChart"></canvas>
+    </div>
+
+    <!-- Chart 3 -->
+    <div class="chart-card full">
+      <h2>2️⃣ Tren Kesiapan (7 Hari)</h2>
+      <canvas id="trenChart"></canvas>
+    </div>
+
+  <!-- Chart Energi Hari Ini -->
+  <div class="chart-card full">
+    <h2>3️⃣ ⚡ Total Energi & Total Biaya — Hari Ini</h2>
+    <div class="energy-last-date-wrapper">
+      <div class="energy-last-date-box">
+        <span class="icon">📅</span>
+        <span class="text">Data terakhir:</span>
+        <span class="date">{{ energy_last_date }}</span>
+      </div>
+    </div>
+    <canvas id="energyBarChart" height="240"></canvas>
+
+    <div class="energy-wrapper">
+
+        <!-- 2 kartu besar -->
+        <div class="energy-grid">
+            <div class="energy-box">
+                <div class="energy-box-title">Total Biaya Hari Ini</div>
+                <div class="energy-box-value" id="costToday">Rp 0</div>
+            </div>
+
+            <div class="energy-box">
+                <div class="energy-box-title">Total Biaya Kemarin</div>
+                <div class="energy-box-value" id="costYesterday">Rp 0</div>
+            </div>
+        </div>
+
+        <!-- 2 kartu kecil -->
+        <div class="energy-small-grid">
+            <div class="energy-box">
+                <div class="energy-box-title">Selisih Biaya</div>
+                <div class="energy-box-value" id="selisihValue">Rp 0</div>
+            </div>
+
+            <div class="energy-box">
+                <div class="energy-box-title">Deviasi</div>
+                <div class="energy-box-value" id="deviasiValue">0%</div>
+            </div>
+        </div>
+
+        <!-- Penjelasan -->
+        <div class="energy-explain" id="explainBox">
+            Memuat analisis...
+        </div>
+
+    </div>
+</div>
+
+  <div class="chart-card full">
+    <h2>⚡ Konsumsi Energi 7 Hari — Total kWh</h2>
+    <canvas id="energy7_kwh"></canvas>
+  </div>
+
+  <div class="chart-card full" style="margin-top:20px;">
+    <h2>💰 Konsumsi Energi 7 Hari — Total Biaya</h2>
+    <canvas id="energy7_cost"></canvas>
+  </div>
+
+    <!-- Tabel Peralatan Kritis -->
+    <div class="chart-card full">
+      <h2>4️⃣ Peralatan Kritis</h2>
+      <div class="table-wrapper">
+        <table class="critical-table">
+          <thead>
+            <tr>
+              <th>Peralatan</th>
+              <th>Unit</th>
+              <th>Nilai</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="criticalTableBody">
+            {% for p in peralatan_kritis %}
+            <tr>
+              <td>{{ p.peralatan.nama_peralatan }}</td>
+              <td>{{ p.peralatan.unit.nama_unit }}</td>
+              <td>{{ p.nilai|floatformat:2 }}</td>
+              <td class="status {{ p.kategori_kesiapan|slugify }}">
+                {{ p.kategori_kesiapan }}
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="4">Tidak ada peralatan kritis 🎉</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AI Insight Box -->
+    <div class="chart-card full insight-box">
+      <h2>🤖 Analisis Otomatis</h2>
+      <p id="aiInsight">
+        {% if overall_readiness >= 85 %}
+          Sistem dalam kondisi optimal. Tidak ada tren penurunan signifikan terdeteksi.
+        {% elif overall_readiness >= 65 %}
+          Kesiapan tergolong cukup. Disarankan pantau unit dengan tren turun.
+        {% else %}
+          Peringatan! Kesiapan rendah. Beberapa unit menunjukkan pola penurunan berturut-turut.
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- AI Insight Prediktif -->
+    <div class="chart-card full insight-box" id="aiInsightPred">
+      <h2>🤖 AI Insight Prediktif</h2>
+      <p>Memuat analisis tren...</p>
+    </div>
+
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  
+  <script src="{% static 'js/chart.min.js' %}"></script>
+  {#  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.0"></script>  #}
+  <!-- Auto-refresh data API -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>-->
+  <script>
+// Pastikan global flag dan timer didefinisikan hanya sekali
+    if (typeof window.refreshRunning === "undefined") window.refreshRunning = false;
+    if (typeof window.refreshTimer === "undefined") window.refreshTimer = null;
+
+   
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("🔁 Auto-refresh aktif untuk Dashboard MyAoCH");
+
+      // ✅ Versi stabil dari fungsi kamu
+      async function refreshDashboardCharts() {
+        if (window.refreshRunning) {
+          console.warn("⏸️ Refresh masih berjalan, lewati siklus ini...");
+          return;
+        }
+        
+        window.refreshRunning = true;
+
+        try {
+          const res = await fetch("/api/dashboard/");
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = await res.json();
+
+          // === 🔄 Update tabel Peralatan Kritis (Realtime dengan warna status) ===
+          (function updateCriticalTableFromAPI(data) {
+            const tbody = document.getElementById("criticalTableBody");
+            if (!tbody) return;
+
+            const kritis = data.peralatan_kritis || [];
+            tbody.innerHTML = "";
+
+            if (kritis.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="4">Tidak ada peralatan kritis 🎉</td></tr>`;
+              return;
+            }
+
+            kritis.forEach((p) => {
+              const nama = p.peralatan__nama_peralatan || (p.peralatan?.nama_peralatan ?? "-");
+              const unit = p.peralatan__unit__nama_unit || (p.peralatan?.unit?.nama_unit ?? "-");
+              const nilai = p.nilai != null ? parseFloat(p.nilai).toFixed(2) : "-";
+              const kategori = p.kategori_kesiapan || "-";
+
+              // 🔹 Ubah teks kategori jadi class CSS (contoh: "Normal / Serviceable" → "normal-serviceable")
+              const cssClass = kategori
+                .toLowerCase()
+                .replace(/\s*\/\s*/g, "-") // ubah tanda "/" jadi "-"
+                .replace(/\s+/g, "-"); // ubah spasi jadi "-"
+
+              const tr = document.createElement("tr");
+
+              // 🔸 Tandai baris kritis dengan warna latar belakang
+              if (cssClass.includes("not-normal")) {
+                tr.classList.add("danger");
+              }
+
+              tr.innerHTML = `
+                <td>${escapeHtml(nama)}</td>
+                <td>${escapeHtml(unit)}</td>
+                <td>${nilai === "-" ? nilai : nilai + "%"}</td>
+                <td class="status ${cssClass}">${escapeHtml(kategori)}</td>
+              `;
+
+              tbody.appendChild(tr);
+            });
+          })(data);
+
+          // helper kecil
+          function escapeHtml(str) {
+            if (!str && str !== 0) return "";
+            return String(str)
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;");
+          }
+
+          // utility: slugify simple
+          function slugify(text) {
+            if (!text) return "";
+            return String(text).toLowerCase().trim().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
+          }
+
+          // 🔁 Update KPI Summary Real-time (aman)
+          const elTotal = document.getElementById("totalPeralatan");
+          const elBermasalah = document.getElementById("peralatanBermasalah");
+          const elReadiness = document.getElementById("overall_readiness");
+          const elKpiStatusku = document.getElementById("kpi-statusku");
+          const elStatusBermasalah = document.querySelector(".kpi-card .kpi-status.peralatan"); // ✅ baru
+
+          // 🧠 Update AI Insight Realtime
+          const aiInsight = document.getElementById("aiInsight");
+          if (aiInsight) {
+            const val = data.overall_readiness;
+            let insightText = "";
+
+            if (val >= 85) {
+              insightText = "Sistem dalam kondisi optimal. Tidak ada tren penurunan signifikan terdeteksi.";
+            } else if (val >= 65) {
+              insightText = "Kesiapan tergolong cukup. Disarankan pantau unit dengan tren turun.";
+            } else {
+              insightText = "Peringatan! Kesiapan rendah. Beberapa unit menunjukkan pola penurunan berturut-turut.";
+            }
+
+            aiInsight.textContent = insightText;
+          }
+
+          if (elTotal) elTotal.textContent = data.total_peralatan;
+          if (elBermasalah) elBermasalah.textContent = data.peralatan_kritis.length;
+          if (elReadiness) elReadiness.textContent = parseFloat(data.overall_readiness).toFixed(1) + "%";
+
+          if (data.overall_readiness >= 80) {
+            elKpiStatusku.textContent = "✅ Optimal";
+            elKpiStatusku.className = "kpi-status good";
+          } else if (data.overall_readiness >= 60) {
+            elKpiStatusku.textContent = "⚠️ Cukup";
+            elKpiStatusku.className = "kpi-status warning";
+          } else {
+            elKpiStatusku.textContent = "❌ Rendah";
+            elKpiStatusku.className = "kpi-status bad";
+          }
+
+          console.log("Interval aktif:", window.refreshTimer);
+
+          // 🧠 Update status teks & warna khusus untuk PERALATAN BERMASALAH
+          const bermasalah = data.peralatan_kritis.length;
+          if (elStatusBermasalah) {
+            if (bermasalah === 0) {
+              elStatusBermasalah.textContent = "Semua Normal";
+              elStatusBermasalah.classList.remove("bad");
+              elStatusBermasalah.classList.add("good");
+            } else {
+              elStatusBermasalah.textContent = "Perlu Tindakan";
+              elStatusBermasalah.classList.remove("good");
+              elStatusBermasalah.classList.add("bad");
+            }
+          }
+
+          // Helper warna dinamis
+          const getColor = (val) => {
+            if (val >= 80) return "#16a34a"; // hijau
+            if (val >= 60) return "#facc15"; // kuning
+            if (val >= 40) return "#fb923c"; // oranye
+            return "#dc2626"; // merah
+          };
+
+          // Fungsi warna berdasarkan label kategori
+          const getKategoriColor = (label) => {
+            const text = label.toLowerCase();
+            if (text.includes("optimal") || text.includes("normal")) return "#16a34a";  // hijau
+            if (text.includes("cukup") || text.includes("serviceable")) return "#facc15"; // kuning
+            if (text.includes("rendah") || text.includes("not normal")) return "#dc2626"; // merah
+            return "#9ca3af"; // abu default
+          };
+
+          
+
+          // 1️⃣ Rata-rata Kesiapan per Unit (Bar)
+          const unitChart = Chart.getChart("unitChart");
+          if (unitChart) {
+            const unitLabels = data.unit_stats.map((u) => u.nama_unit);
+            const unitValues = data.unit_stats.map((u) => u.rata_nilai);
+            const unitColors = unitValues.map((v) => getColor(v));
+
+            unitChart.data.labels = unitLabels;
+            unitChart.data.datasets.forEach((dataset) => {
+              dataset.data = unitValues;
+              dataset.backgroundColor = unitColors; // pastikan array warna di sini!
+            });
+            unitChart.update("none");
+          }
+
+          // 3️⃣ Tren Chart
+          const trenChart = Chart.getChart("trenChart");
+          if (trenChart) {
+            const trenValues = data.tren_data.map((t) => parseFloat(t.avg_nilai));
+            trenChart.data.labels = data.tren_data.map((t) =>
+              new Date(t.tgl_agg).toLocaleDateString("id-ID", {
+                weekday: "short",
+                day: "2-digit",
+                month: "short",
+              })
+            );
+            trenChart.data.datasets[0].data = trenValues;
+            trenChart.update("active");
+          }
+
+          // 🤖 Realtime Analisis Tren + Prediksi AI
+          const trenValues = data.tren_data.map((t) => parseFloat(t.avg_nilai));
+          const insightPredBox = document.getElementById("aiInsightPred");
+
+          if (insightPredBox && trenValues.length >= 2) {
+            const firstVal = trenValues[0];
+            const lastVal = trenValues[trenValues.length - 1];
+            const deltaTotal = (lastVal - firstVal).toFixed(2);
+            const trend = deltaTotal >= 0 ? "naik" : "turun";
+
+            // 🔹 Regresi linear sederhana untuk prediksi besok
+            const n = trenValues.length;
+            const x = Array.from({ length: n }, (_, i) => i + 1);
+            const meanX = x.reduce((a, b) => a + b, 0) / n;
+            const meanY = trenValues.reduce((a, b) => a + b, 0) / n;
+            const num = x.map((xi, i) => (xi - meanX) * (trenValues[i] - meanY)).reduce((a, b) => a + b, 0);
+            const den = x.map((xi) => Math.pow(xi - meanX, 2)).reduce((a, b) => a + b, 0);
+            const slope = num / den;
+            const nextPred = meanY + slope * (n + 1 - meanX);
+            const deltaPred = (nextPred - lastVal).toFixed(2);
+
+            // 🧠 Tulis insight baru
+            const insightText = `
+              <strong>Analisis Tren:</strong> Kesiapan <b>${trend}</b> sebesar <b>${Math.abs(
+              deltaTotal
+            )}%</b> selama 7 hari terakhir.<br>
+              <strong>Prediksi Otomatis:</strong> Berdasarkan tren linear, kesiapan besok diperkirakan 
+              <b>${deltaPred >= 0 ? "naik" : "turun"}</b> ke <b>${nextPred.toFixed(
+              2
+            )}%</b> (${deltaPred >= 0 ? "📈" : "📉"} ${Math.abs(deltaPred)}%).
+            `;
+
+            insightPredBox.querySelector("p").innerHTML = insightText;
+          }
+
+          console.log("✅ Dashboard updated:", new Date().toLocaleTimeString());
+        } catch (err) {
+          console.error("❌ Gagal memperbarui dashboard:", err.message);
+        } finally {
+          window.refreshRunning = false;
+        }
+      }
+
+      // Jalankan sekali saat load
+      //refreshDashboardCharts();
+
+      // Pastikan hanya SATU interval aktif
+      if (refreshTimer) {
+        console.warn("⚠️ Interval lama ditemukan, dibatalkan:", refreshTimer);
+        clearInterval(refreshTimer);
+      }
+
+      // === 🔰 Render Forecast Chart dari Template (tanpa API refresh) ===
+      window.addEventListener("load", () => {
+        console.log("⚙️ Memuat Chart Forecast awal dari template...");
+
+        // Ambil data JSON dari template
+        const forecastEl = document.getElementById("forecastData");
+        if (!forecastEl) {
+          console.warn("⚠️ Tidak ada elemen #forecastData di halaman.");
+          return;
+        }
+
+        const forecastData = JSON.parse(forecastEl.textContent || "[]");
+        if (!forecastData.length) {
+          console.warn("⚠️ forecast_risk kosong dari dashboard_view()");
+          return;
+        }
+        
+
+        // Warna dinamis
+        const colorScale = val => {
+          const r = Math.min(255, Math.round((val / 100) * 255));
+          const g = Math.min(255, Math.round(255 - (val / 100) * 255));
+          return `rgba(${r},${g},0,0.8)`;
+        };
+
+        const units = [...new Set(forecastData.map(d => d.nama_unit))];
+        const chartPoints = forecastData.map(d => ({
+          x: d.jam_ke,
+          y: units.indexOf(d.nama_unit),
+          r: 10,
+          pred_risk: d.prediksi_risiko,
+          unit: d.nama_unit
+        }));
+
+        console.log("✅ Chart Forecast awal berhasil dimuat!");
+      });
+
+      
+
+      if (window.refreshTimer) clearInterval(window.refreshTimer);
+          window.refreshTimer = setInterval(refreshDashboardCharts, 5000);
+          console.log("🕒 Interval aktif:", window.refreshTimer);
+
+
+      // ✅ Jalankan refresh setiap 10 detik
+      // setInterval(refreshDashboardCharts, 5000);
+    });
+  </script>
+  
+  <!-- JSON data untuk Chart.js -->
+  {{ unit_comparison|json_script:"unitCompareData" }}
+  {{ unit_stats|json_script:"unitStatsData" }}
+  {{ kategori_counts|json_script:"kategoriData" }}
+  {{ tren_data|json_script:"trenData" }}
+  {{ heatmap_data|json_script:"heatmapData" }}
+  {{ forecast_risk_real|json_script:"forecastData" }}
+  <!--{{ forecast_risk|json_script:"forecastData" }}-->
+  {{ energy_data|json_script:"energyData" }}
+
+  <!-- Chart.js utama -->
+  <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>-->
+  <script src="{% static 'js/chartjs-plugin-datalabels.min.js' %}"></script>
+  <script src="{% static 'js/dashboard_v3.js' %}"></script>
+  <script>
+  // Pastikan dipanggil SETELAH file di atas
+  //window.addEventListener("load", () => {
+  //  const data = JSON.parse(document.getElementById("unitStatsData").textContent);
+  //  renderForecastBarChart(data);
+  //});
+  window.addEventListener("load", () => {
+    const energy = JSON.parse(document.getElementById("energyData").textContent);
+    renderEnergyTodayChart(energy);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+  <!-- CONFIG untuk JS -->
+  <div id="energy-config"
+       data-faktor="{{ setting.faktor_kali_kwh|default:0 }}"
+       data-harga-lwbp="{{ setting.harga_lwbp|default:0 }}"
+       data-harga-wbp="{{ setting.harga_wbp|default:0 }}"
+       data-total-biaya-kemarin="{{ total_biaya_kemarin|default:0 }}">
+  </div>
+
+  <script>
+    window.ENERGY_SETTING = {
+        faktor: {{ setting.faktor_kali_kwh|default:0|floatformat:"2" }},
+        harga_lwbp: {{ setting.harga_lwbp|default:0|floatformat:"2" }},
+        harga_wbp: {{ setting.harga_wbp|default:0|floatformat:"2" }},
+        total_biaya_kemarin: {{ total_biaya_kemarin|default:0|floatformat:"2" }}
+    };
+  </script>
+
+  {{ block.super }}
+{% endblock %}
