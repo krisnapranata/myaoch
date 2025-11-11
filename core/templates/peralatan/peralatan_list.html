@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+
+/* RESPONSIVE TOGGLE */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+    .desktop-only { display: none; }
+    .mobile-only { display: block; }
+}
+
+/* MAIN WRAPPER */
+.equipment-card {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+/* DESKTOP – Elegant Modern Button */
+.btn-add {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    padding: 8px 14px;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 3px 10px rgba(34, 197, 94, 0.25);
+    transition: 0.2s ease-in-out;
+    margin-left: 14px; /* jarak dari h4 */
+}
+
+.btn-add:hover {
+    background: linear-gradient(135deg, #16a34a, #15803d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+}
+
+.btn-add:active {
+    transform: scale(0.97);
+}
+
+
+/* ✅ MOBILE VERSION – compact & elegant */
+@media (max-width: 480px) {
+    .btn-add {
+        padding: 6px 10px;
+        font-size: 12px;
+        border-radius: 8px;
+        gap: 4px;
+        margin-left: 8px;
+        box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+    }
+}
+
+/* ========= DESKTOP TABLE ========= */
+.elegant-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.elegant-table thead th {
+    background: #f1f3f5;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: .85rem;
+}
+
+.elegant-table tbody tr {
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.elegant-table td {
+    padding: 10px;
+}
+
+/* ACTION BUTTONS */
+.act-btn {
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.act-btn.edit { background: #0d6efd; color: white; }
+.act-btn.delete { background: #dc3545; color: white; }
+
+/* ========= MOBILE TABLE COMPACT ========= */
+.mobile-table-wrapper {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.mobile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.mobile-table th {
+    background: #e7eaef;
+    padding: 6px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.mobile-table td {
+    padding: 6px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-table .act-btn {
+    padding: 3px 5px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+</style>
+<h1 class="page-title">📦 Daftar Peralatan</h1>
+
+<div class="equipment-card">
+
+    <div class="header-row">
+        <h4 class="fw-bold">List Peralatan Unit {{ request.appuser.unit.nama_unit }}</h4>
+        <a href="{% url 'peralatan_add' %}" class="btn-add">➕ Tambah Peralatan</a>
+    </div>
+
+    <!-- ✅ DESKTOP TABLE -->
+    <div class="desktop-only">
+        <table class="elegant-table">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Nama Peralatan</th>
+                    <th class="center">Jumlah</th>
+                    <th class="center">Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in peralatan %}
+                <tr>
+                    <td>{{ p.kode_peralatan }}</td>
+                    <td>{{ p.nama_peralatan }}</td>
+                    <td class="center">{{ p.jumlah_alat }}</td>
+                    <td class="center">
+                        <a href="{% url 'peralatan_edit' p.id %}" class="act-btn edit">✏️</a>
+                        <a href="{% url 'peralatan_delete' p.id %}" class="act-btn delete"
+                           onclick="return confirm('Hapus peralatan ini?')">🗑️</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- ✅ MOBILE TABLE VERSION (Compact) -->
+    <div class="mobile-only mobile-table-wrapper">
+        <table class="mobile-table">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>Jumlah</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in peralatan %}
+                <tr>
+                    <td>{{ p.kode_peralatan }}</td>
+                    <td style="text-align:left;">{{ p.nama_peralatan }}</td>
+                    <td>{{ p.jumlah_alat }}</td>
+                    <td>
+                        <a href="{% url 'peralatan_edit' p.id %}" class="act-btn edit">✏️</a>
+                        <a href="{% url 'peralatan_delete' p.id %}" class="act-btn delete"
+                           onclick="return confirm('Hapus peralatan ini?')">🗑️</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

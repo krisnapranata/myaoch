@@ -1,22 +1,34 @@
 from django.urls import path
-from . import views_old
-
-# from myaoch.core.views_old import (
-#     operator_dashboard, input_kesiapan, operator_history,
-#     spv_dashboard, verifikasi_spv,
-#     aoch_dashboard, laporan_aoch,
-#     gm_dashboard, gm_laporan,
-#     dashboard_global, dashboard_api_view
-# )
+from . import views_old, views_notif
 
 from core.view import (
-    operator_dashboard, input_kesiapan, operator_history,
-    spv_dashboard, verifikasi_spv,
-    aoch_dashboard, laporan_aoch,
-    gm_dashboard, gm_laporan,
-    dashboard_view, api_view,
-    auth_views, get_biaya_kemarin
+    operator_dashboard,
+    input_kesiapan,
+    operator_history,
+    spv_dashboard,
+    verifikasi_spv,
+    aoch_dashboard,
+    laporan_aoch,
+    gm_dashboard,
+    gm_laporan,
+    dashboard_view,
+    api_view,
+    auth_views,
+    get_biaya_kemarin,
+    operator_save_kesiapan,
+    operator_save_all,
+    peralatan_list,
+    peralatan_add,
+    peralatan_edit,
+    peralatan_delete,
+    #     equipment_views,
+    #     peralatan_list,
+    #     peralatan_add,
+    #     peralatan_edit,
+    #     peralatan_delete,
+
 )
+
 
 urlpatterns = [
     path('', dashboard_view, name='dashboard'),
@@ -29,9 +41,14 @@ urlpatterns = [
     # path('portal/dashboard/', dashboard_views.dashboard_view, name='portal_dashboard'),
 
     # Operator
-    path('operator/dashboard/', operator_dashboard, name='dashboard_operator'),
+    path("operator/dashboard/", operator_dashboard, name="operator_dashboard"),
+    path("operator/save/", operator_save_kesiapan,
+         name="operator_save_kesiapan"),
+    # path('operator/dashboard/', operator_dashboard, name='dashboard_operator'),
     path('operator/input/', input_kesiapan, name='input_kesiapan'),
     path('operator/history/', operator_history, name='operator_history'),
+    path("operator/save-all/", operator_save_all,
+         name="operator_save_all"),
 
     # SPV
     path('spv/dashboard/', spv_dashboard, name='dashboard_spv'),
@@ -57,4 +74,14 @@ urlpatterns = [
          views_old.get_jumlah_alat, name='get_jumlah_alat'),
 
     path("api/get-biaya-kemarin/", get_biaya_kemarin, name="get_biaya_kemarin"),
+
+    path("notif/open/<int:notif_id>/",
+         views_notif.notif_read_and_go, name="notif_open"),
+    path("notifikasi/", views_notif.notifikasi_list, name="notifikasi_list"),
+
+    # Peralatan
+    path("peralatan/", peralatan_list, name="peralatan_list"),
+    path("peralatan/add/", peralatan_add, name="peralatan_add"),
+    path("peralatan/<int:pk>/edit/", peralatan_edit, name="peralatan_edit"),
+    path("peralatan/<int:pk>/delete/", peralatan_delete, name="peralatan_delete"),
 ]

@@ -4,6 +4,8 @@ from core.models import AppUser
 
 
 def login_view(request):
+    # ✅ Pastikan messages lama hilang saat buka login
+    list(messages.get_messages(request))
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -34,5 +36,10 @@ def login_view(request):
 
 
 def logout_view(request):
+    # Hapus session / cookie login
     request.session.flush()
+
+    # ✅ Bersihkan semua pesan yang tersisa
+    list(messages.get_messages(request))
+
     return redirect("portal_login")

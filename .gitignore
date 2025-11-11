@@ -1,9 +1,80 @@
-venv/
+# ===========================
+# ✅ PYTHON CACHE
+# ===========================
 __pycache__/
-*.pyc
-*.sqlite3
+*.py[cod]
+*$py.class
+
+# ===========================
+# ✅ ENVIRONMENT
+# ===========================
+venv/
 .env
-.idea/
-.vscode/
+.env.*        # e.g. .env.dev / .env.prod
+*.env
+
+# ===========================
+# ✅ SQLITE & DATABASE
+# ===========================
+*.sqlite3
+
+# ===========================
+# ✅ DJANGO STATIC & MEDIA
+# ===========================
 staticfiles/
 media/
+static/
+media_root/
+
+# ===========================
+# ✅ MIGRATIONS CACHE
+# (Tetap commit file migration yang berisi 0001_initial dsb)
+# ===========================
+**/migrations/__pycache__/
+**/migrations/*.pyc
+
+# ===========================
+# ✅ DJANGO SECRET FILES
+# ===========================
+secret_key.txt
+*.pem
+*.key
+
+# ===========================
+# ✅ LOG FILES
+# ===========================
+*.log
+logs/
+
+# ===========================
+# ✅ IDE CONFIG
+# ===========================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ===========================
+# ✅ DOCKER FILES
+# ===========================
+docker-data/
+docker-db/
+docker-volumes/
+*.pid
+
+# ===========================
+# ✅ NODE / FRONTEND (jika dibutuhkan nanti)
+# ===========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===========================
+# ✅ TEMPORARY FILES
+# ===========================
+*.bak
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<h1 class="page-title">⚙️ Form Peralatan</h1>
+
+<div class="main-card" style="max-width:600px;margin:auto;">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Kode Peralatan</label>
+            <input type="text" name="kode_peralatan" value="{{ form.kode_peralatan.value }}" 
+                   class="form-control" readonly>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nama Peralatan</label>
+            <input type="text" name="nama_peralatan" class="form-control" 
+                   value="{{ form.nama_peralatan.value }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Jumlah Alat</label>
+            <input type="number" name="jumlah_alat" class="form-control" min="1" 
+                   value="{{ form.jumlah_alat.value|default:1 }}" required>
+        </div>
+
+        <button class="btn btn-success w-100">💾 Simpan</button>
+    </form>
+
+</div>
+
+{% endblock %}

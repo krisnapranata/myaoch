@@ -4,39 +4,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}MyAoCH - Kesiapan Bandara{% endblock %}</title>
+  <title>{% block title %}MyAOCH - Kesiapan Bandara{% endblock %}</title>
 
-   <!-- Global Styles -->
+  <!-- Global Styles -->
   <link rel="stylesheet" href="{% static 'css/base.css' %}">
   <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
   <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
-  
-  <!-- Conditional: Login Page -->
-  {% if "login" in request.path %}
-  <link rel="stylesheet" href="{% static 'css/login.css' %}">
-  
-  {% endif %}
-  
-  <script src="{% static 'js/app.js' %}" defer></script>
-  {% block extra_css %}{% endblock %}
 
+  {% if "login" in request.path %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  {% endif %}
+
+  <script src="{% static 'js/app.js' %}" defer></script>
+
+  {% block extra_css %}{% endblock %}
   {% block extra_head %}{% endblock %}
+
+  <style>
+    /* ✅ FIX: Struktur sticky footer */
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .layout-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .layout-content {
+      flex: 1;   /* konten fleksibel menyesuaikan ruang */
+      padding-bottom: 1rem;
+    }
+
+    .layout-footer {
+    background: #0f1624;
+    color: white;
+    text-align: center;
+    padding: 12px 0;
+}
+
+.footer-inner p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+  </style>
+
 </head>
 <body>
-  <!-- ✅ Navbar -->
-  {% include "includes/navbar.html" %}
 
-  <!-- ✅ Konten utama -->
-  <main class="container">
-    {% block content %}
-    {% endblock %}
-  </main>
+<div class="layout-wrapper">
 
-  <!-- ✅ Footer -->
-  {% include "includes/footer.html" %}
+    <!-- ✅ Navbar -->
+    {% include "includes/navbar.html" %}
 
-  <!-- ✅ Tambahan script -->
-  {% block extra_js %}
-  {% endblock %}
+    <!-- ✅ Konten utama fleksibel -->
+    <main class="layout-content container">
+      {% block content %}
+      {% endblock %}
+    </main>
+
+    <!-- ✅ Footer sticky -->
+    <footer class="layout-footer">
+      {% include "includes/footer.html" %}
+    </footer>
+
+</div>
+
+<!-- ✅ Tambahan script -->
+{% block extra_js %}
+{% endblock %}
+
 </body>
 </html>

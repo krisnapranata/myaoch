@@ -1,99 +1,149 @@
 {% extends "base.html" %}
 {% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/operator.css' %}">
+{% endblock %}
 
 {% block title %}Dashboard Operator — MyAoCH{% endblock %}
 
 {% block content %}
-<h1>👷 Dashboard Operator — {{ request.user.unit.nama_unit }}</h1>
 
-<div class="toolbar">
-  <input type="text" id="searchInput" placeholder="🔍 Cari peralatan..." />
-  <button id="btnTambah">➕ Tambah Peralatan</button>
-  <button id="btnDashboardUmum">📊 Dashboard Umum</button>
-  <button id="btnHistory">🕓 Riwayat</button>
+
+<!-- ✅ PAGE HEADER -->
+<h1 class="page-title">👷 Officer</h1>
+
+
+<!-- ✅ FORM UTAMA (TIDAK ADA NESTED FORM) -->
+<form id="formOperator" method="POST">
+    {% csrf_token %}
+
+    <!-- Hidden untuk save row -->
+    <input type="hidden" id="rowSaveId" name="peralatan_id">
+    <input type="hidden" id="rowSaveValue" name="jumlah_normal">
+
+<div class="main-card">
+
+    <!-- ✅ TOMBOL SIMPAN SEMUA -->
+    <div class="header-tools">
+    <h4 class="fw-bold mb-2">📋 Daftar Peralatan Hari Ini</h4>
+
+    <button class="save-all-btn"
+            type="submit"
+            formaction="{% url 'operator_save_all' %}">
+        💾 Simpan Semua
+    </button>
 </div>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Peralatan</th>
-      <th>Kategori</th>
-      <th>Nilai Hari Ini</th>
-      <th>Status</th>
-      <th>Aksi</th>
-    </tr>
-  </thead>
-  <tbody id="peralatanTable">
-    {% for p in peralatan_list %}
-    <tr>
-      <td>{{ p.nama_peralatan }}</td>
-      <td>{{ p.kategori|default:"-" }}</td>
-      <td>
-        {% with nilai=p.nilai_hari_ini %}
-          {% if nilai %}
-            {{ nilai }}%
-          {% else %}
-            <em>Belum diinput</em>
-          {% endif %}
-        {% endwith %}
-      </td>
-      <td>
-        {% if p.status_verifikasi == "Final" %}
-          ✅ Final
-        {% elif p.status_verifikasi == "Diverifikasi SPV" %}
-          🟡 Diverifikasi SPV
-        {% elif p.status_verifikasi == "Draft" %}
-          ⏳ Menunggu Verifikasi
-        {% else %}
-          ❌ Ditolak
-        {% endif %}
-      </td>
-      <td>
-        <button class="btnInput" data-id="{{ p.id }}">📝 Input Nilai</button>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
+<!-- ✅ TABLE -->
+<div class="table-responsive-mobile">
+<div class="table-wrapper">
+
+    <div class="toolbar-row">
+        <input type="text" id="searchInput" class="toolbar-search"
+               placeholder="🔍 Cari peralatan...">
+    </div>
+
+    <div class="toolbar-buttons">
+        <button id="btnDashboardUmum" class="tb-btn" formaction="{% url 'dashboard' %}">📊 Dashboard</button>
+        <button id="btnHistory" class="tb-btn">🕓 Riwayat</button>
+    </div>
+    
+
+<table class="elegant-table">
+<thead>
+<tr>
+    <th>Peralatan</th>
+    <th class="center">Jumlah Normal</th>
+    <th class="center">Nilai</th>
+    <th class="center">Verifikasi</th>
+    <th class="center">Aksi</th>
+</tr>
+</thead>
+
+<tbody>
+{% for p in peralatan_list %}
+<tr>
+
+<td class="nama-peralatan">{{ p.nama_peralatan }}</td>
+
+<td class="center">
+    <input type="number"
+       name="jumlah_normal_{{ p.id }}"
+       class="input-normal"
+       value="{{ p.jumlah_normal_hari_ini }}"
+       min="0" max="{{ p.jumlah_alat }}">
+</td>
+
+<td class="center">
+    {% if p.nilai_hari_ini %}
+    <span class="badge-blue">{{ p.nilai_hari_ini|floatformat:0 }}%</span>
+{% else %}
+    <span class="badge-grey">-</span>
+{% endif %}
+</td>
+
+<td class="center">
+    {% if p.status_verifikasi == "Draft" %}
+        <span class="badge-green">Draft</span>
+    {% elif p.status_verifikasi == "Diverifikasi SPV" %}
+        <span class="badge-yellow">Verif SPV</span>
+    {% elif p.status_verifikasi == "Diverifikasi AOCH" %}
+        <span class="badge-green">Verif AOCH</span>
+    {% elif p.status_verifikasi == "Butuh Verif GM" %}
+        <span class="badge-gm">Verif GM</span>
+    {% elif p.status_verifikasi == "Final" %}
+        <span class="badge-green">Final</span>
+    {% else %}
+        <span class="badge-grey">-</span>
+    {% endif %}
+</td>
+
+<td class="center">
+    <button type="submit"
+            class="btn-save-row"
+            formaction="{% url 'operator_save_kesiapan' %}"
+            data-id="{{ p.id }}">
+        💾
+    </button>
+</td>
+
+</tr>
+{% endfor %}
+</tbody>
 </table>
 
-<div id="chartUnitSection" style="margin-top:2rem;">
-  <h2>📈 Tren Kesiapan Unit — {{ request.user.unit.nama_unit }}</h2>
-  <canvas id="chartUnit"></canvas>
 </div>
+</div>
+
+</div>
+</form>
 
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/chart.min.js' %}"></script>
 <script>
-  // Filter pencarian
-  document.getElementById('searchInput').addEventListener('input', function(){
-    const filter = this.value.toLowerCase();
-    document.querySelectorAll('#peralatanTable tr').forEach(tr => {
-      tr.style.display = tr.textContent.toLowerCase().includes(filter) ? '' : 'none';
+/* ✅ SAVE BARIS */
+document.querySelectorAll(".btn-save-row").forEach(btn => {
+    btn.addEventListener("click", function () {
+        const id = this.dataset.id;
+        const row = this.closest("tr");
+        const val = row.querySelector(".input-normal").value;
+
+        document.getElementById("rowSaveId").value = id;
+        document.getElementById("rowSaveValue").value = val;
     });
-  });
+});
 
-  // Tombol navigasi
-  document.getElementById("btnDashboardUmum").onclick = () => window.location.href = "/dashboard/";
-  document.getElementById("btnTambah").onclick = () => window.location.href = "/operator/tambah/";
-  document.getElementById("btnHistory").onclick = () => window.location.href = "/operator/history/";
+/* ✅ SEARCH FILTER */
+document.getElementById('searchInput').addEventListener('input', function(){
+    const filter = this.value.toLowerCase();
+    document.querySelectorAll('tbody tr').forEach(tr => {
+        tr.style.display = tr.textContent.toLowerCase().includes(filter) ? '' : 'none';
+    });
+});
 
-  // Chart unit readiness
-  const dataUnit = JSON.parse(document.getElementById('unitData').textContent);
-  const ctx = document.getElementById('chartUnit');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: dataUnit.map(d => d.tanggal),
-      datasets: [{
-        label: 'Rata-rata Kesiapan',
-        data: dataUnit.map(d => d.nilai),
-        fill: true,
-      }]
-    },
-    options: { responsive:true, scales:{ y:{ beginAtZero:true, max:100 } } }
-  });
+/* ✅ NAVIGATION */
+document.getElementById("btnDashboardUmum").onclick = () => window.location.href = "/dashboard/";
+document.getElementById("btnHistory").onclick = () => window.location.href = "/operator/history/";
 </script>
-{{ unit_tren|json_script:"unitData" }}
 {% endblock %}

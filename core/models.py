@@ -111,30 +111,6 @@ class NilaiKesiapan(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    # def save(self, *args, **kwargs):
-    #     """Hitung otomatis kategori dan nilai kesiapan."""
-    #     # Pastikan peralatan punya jumlah_alat
-    #     total_alat = getattr(self.peralatan, "jumlah_alat", 1) or 1
-
-    #     # Hitung nilai otomatis dari jumlah alat normal
-    #     if self.jumlah_alat_normal is not None:
-    #         self.nilai = (self.jumlah_alat_normal / total_alat) * 100
-
-    #     # Tetapkan kategori otomatis dari nilai
-    #     if self.nilai <= 25:
-    #         self.kategori_kesiapan = "Not Normal / Unserviceable"
-    #     elif self.nilai <= 50:
-    #         self.kategori_kesiapan = "Not Normal / Serviceable"
-    #     elif self.nilai <= 75:
-    #         self.kategori_kesiapan = "Normal / Unserviceable"
-    #     else:
-    #         self.kategori_kesiapan = "Normal / Serviceable"
-
-    #     super().save(*args, **kwargs)
-
-    # def __str__(self):
-    #     return f"{self.peralatan.nama_peralatan} ({self.nilai}%)"
-
     def clean(self):
         """Validasi logika jumlah alat normal tidak boleh melebihi total alat."""
         total_alat = getattr(self.peralatan, "jumlah_alat", 1) or 1

@@ -33,9 +33,9 @@ SECRET_KEY = 'django-insecure-()wx&dp7nx4j1@e(ktvgwcpn6^nnua_x7d+8m#68$(13(0u23(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['192.168.1.10', '192.168.101.154', '192.168.0.108',
-                 'localhost', '127.0.0.1', '10.138.65.72', '192.168.17.182']
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['192.168.1.10', '192.168.101.154', '192.168.0.108',
+#  'localhost', '127.0.0.1', '10.138.65.72', '192.168.17.182']
 
 
 # Application definition
@@ -83,6 +83,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.notif_context',
             ],
         },
     },
