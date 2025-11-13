@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}MyAoCH - Kesiapan Bandara{% endblock %}</title>
+
+
+<!-- Bootstrap CSS (CDN) -->
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'fonts/bootstrap-icons/bootstrap-icons.min.css' %}">
+<!-- Bootstrap Icons -->
+
+
+<!-- App CSS -->
+<link rel="stylesheet" href="{% static 'css/new_myaoch.css' %}">
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+<link rel="stylesheet" href="{% static 'css/new_mobile.css' %}">
+
+<!-- Global Styles -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+<script src="{% static 'js/app.js' %}" defer></script>
+
+
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+
+<div class="layout-wrapper">
+
+
+<!-- Navbar -->
+{% include 'includes/new_navbar.html' %}
+
+
+<!-- Main content -->
+<main class="layout-content container py-3">
+{% block content %}{% endblock %}
+</main>
+
+
+<!-- Footer -->
+{% include 'includes/new_footer.html' %}
+
+
+<!-- Bottom navigation (mobile) -->
+{% include 'includes/new_bottomnav.html' %}
+
+
+</div>
+
+
+<!-- JS: Bootstrap + ChartJS + app script -->
+<script src="{% static 'js/bootstrap.bundle.min.js' %}" defer></script>
+<script src="{% static 'js/new_myaoch.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

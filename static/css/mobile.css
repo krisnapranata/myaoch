@@ -1,3 +1,22 @@
+/* bottom nav (mobile) */
+.bottom-nav{
+position:fixed;left:10px;right:10px;bottom:12px;background:var(--primary);display:flex;justify-content:space-around;padding:8px;border-radius:12px;z-index:9999;box-shadow:0 10px 30px rgba(13,71,161,0.12);
+}
+
+
+.bottom-nav .nav-item{color:white;text-decoration:none;display:flex;flex-direction:column;align-items:center;font-size:0.8rem}
+.bottom-nav .nav-item i{font-size:1.4rem}
+
+
+/* desktop: hide bottom nav */
+@media(min-width:768px){
+.bottom-nav{display:none}
+}
+
+
+/* content spacing on small devices */
+.container{max-width:960px}
+
 /* ============================================
    GLOBAL MOBILE OPTIMIZATION for MyAoCH
    ============================================ */

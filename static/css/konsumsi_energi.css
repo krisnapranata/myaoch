@@ -1,0 +1,395 @@
+/* ==============================
+   GENERAL STYLE
+============================== */
+.equipment-card {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+/* RESPONSIVE TOGGLE */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+    .desktop-only { display: none; }
+    .mobile-only { display: block; }
+}
+
+/* ==============================
+   ADD BUTTON – Compact Blue
+============================== */
+.btn-add {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 12px;          /* ⬅️ lebih kecil */
+    border-radius: 8px;         /* ⬅️ sedikit lebih tajam */
+    font-weight: 600;
+    font-size: 0.8rem;          /* ⬅️ kecil tapi masih terbaca jelas */
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    transition: all 0.2s ease;
+    line-height: 1.1;
+}
+
+.btn-add:hover {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+}
+
+.btn-add:active {
+    transform: scale(0.97);
+}
+
+.btn-add i {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px;               /* ⬅️ kecil */
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+}
+
+/* ==============================
+   ADD FORM STYLE (Dropdown)
+============================== */
+.add-form-wrapper {
+    display: none;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease;
+    width: 100%;              /* ✅ pastikan penuh dalam card */
+    box-sizing: border-box;   /* ✅ biar padding & border masuk hitungan width */
+    overflow: hidden;         /* ✅ cegah elemen keluar */
+}
+
+.add-form-wrapper.active {
+    display: block;
+}
+
+.add-form-wrapper label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #334155;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.add-form-wrapper .form-control {
+    width: 100%;               /* ✅ biar full dalam card */
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    box-sizing: border-box;    /* ✅ fix untuk mobile overflow */
+}
+
+/* ✅ Pastikan form mengikuti lebar parent di mobile */
+@media (max-width: 480px) {
+    .add-form-wrapper {
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    .add-form-wrapper .form-control {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions button {
+        width: 100%;            /* tombol full di mobile */
+    }
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-save:hover { background: #2563eb; }
+
+.btn-cancel {
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-cancel:hover { background: #cbd5e1; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================
+   MOBILE VERSION
+============================== */
+@media (max-width: 480px) {
+    .btn-add {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        gap: 4px;
+    }
+    .btn-add i {
+        padding: 3px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==============================
+   TABLES
+============================== */
+.elegant-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.elegant-table thead th {
+    background: #f1f3f5;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: .85rem;
+}
+
+.elegant-table tbody tr {
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.elegant-table td {
+    padding: 10px;
+}
+
+.act-btn {
+    padding: 4px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.act-btn.edit { background: #0d6efd; color: white; }
+.act-btn.delete { background: #dc3545; color: white; }
+
+.mobile-table-wrapper {
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.mobile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.mobile-table th {
+    background: #e7eaef;
+    padding: 6px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.mobile-table td {
+    padding: 6px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.mobile-table .act-btn {
+    padding: 3px 5px;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+/* ==============================
+   HEADER TITLE RESPONSIVE
+============================== */
+.header-row h4 {
+    font-size: 1.1rem;    /* default desktop */
+    color: #1e293b;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .header-row h4 {
+        font-size: 0.95rem;   /* tablet */
+    }
+}
+
+@media (max-width: 480px) {
+    .header-row h4 {
+        font-size: 0.8rem;    /* 📱 hp kecil: lebih kecil & rapi */
+    }
+}
+
+/* ==============================
+   MESSAGES STYLE – Clean Responsive
+============================== */
+.messages {
+    margin-bottom: 14px;
+    animation: fadeInMsg 0.4s ease;
+}
+
+.msg {
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;        /* ⬅️ lebih kecil dari sebelumnya */
+    font-weight: 500;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.msg.success {
+    background: #e0f2fe;       /* biru muda lembut */
+    color: #075985;            /* biru tua */
+    border: 1px solid #bae6fd;
+}
+
+.msg.error {
+    background: #fee2e2;       /* merah pastel */
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.msg.warning {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde68a;
+}
+
+/* 🔹 RESPONSIVE untuk HP */
+@media (max-width: 480px) {
+    .msg {
+        font-size: 0.75rem;    /* ⬅️ lebih kecil di HP */
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+    }
+}
+
+/* Animasi lembut */
+@keyframes fadeInMsg {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================
+   SEARCH ROW — FULL WIDTH DESKTOP
+============================== */
+.toolbar-row {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start; /* ⬅️ biar mulai dari kiri, bukan ngecil */
+    margin-bottom: 12px;
+}
+
+/* ==============================
+   SEARCH INPUT
+============================== */
+.toolbar-search {
+    width: 100%;          /* ⬅️ FULL WIDTH */
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    font-size: 0.9rem;
+    color: #334155;
+    transition: all 0.2s ease;
+    box-sizing: border-box;  /* ⬅️ penting! */
+}
+
+.toolbar-search:focus {
+    outline: none;
+    border-color: #60a5fa;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+}
+
+/* Responsif untuk HP */
+@media (max-width: 480px) {
+    .toolbar-row {
+        justify-content: center;
+    }
+
+    .toolbar-search {
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+}
+
+.btn-setting {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e0f2fe;               /* biru terang pastel */
+    color: #0c4a6e;                    /* biru gelap */
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid #bae6fd;         /* biru lembut */
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
+    transition: all 0.2s ease;
+}
+
+.btn-setting:hover {
+    background: #bae6fd;
+    border-color: #7dd3fc;
+    transform: translateY(-1px);
+}
+
+.btn-setting i {
+    font-size: 0.9rem;
+}

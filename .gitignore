@@ -23,7 +23,6 @@ venv/
 # ===========================
 staticfiles/
 media/
-static/
 media_root/
 
 # ===========================

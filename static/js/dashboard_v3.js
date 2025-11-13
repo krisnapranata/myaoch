@@ -818,122 +818,125 @@
   // };
 
 
-  // konsumsi energi hari ini
+  // konsumsi energi hari ini — FIX SESUAI MODEL DJANGO
   window.renderEnergyTodayChart = function (energyData) {
-    if (!energyData || !energyData.length) return;
+      // === DATA DARI DJANGO (SUDAH BENAR) ===
+      const energi = window.energi_today || 0;
+      const biayaToday = window.biaya_today || 0;
+      const biayaYesterday = window.biaya_yesterday || 0;
+      const selisih = window.selisih_biaya_today || 0;
+      const deviasi = window.deviasi_today || 0;
 
-    const today = energyData[energyData.length - 1];
-    const yesterday = energyData.length > 1 ? energyData[energyData.length - 2] : today;
+      // ===========================
+      // RESPONSIVE FONT
+      // ===========================
+      const FONT_SIZE = window.innerWidth < 600 ? 10 : 13;
+      Chart.defaults.font.size = FONT_SIZE;
 
-    const energi = today.total_pemakaian || 0;
-    const biayaToday = today.total_biaya || 0;
-    const biayaYesterday = yesterday.total_biaya || 0;
+      // ===========================
+      // UPDATE UI BOX
+      // ===========================
+      document.getElementById("costToday").textContent =
+          "Rp " + biayaToday.toLocaleString("id-ID");
 
-    const selisih = biayaToday - biayaYesterday;
-    const deviasi = biayaYesterday > 0 ? (selisih / biayaYesterday) * 100 : 0;
+      document.getElementById("costYesterday").textContent =
+          "Rp " + biayaYesterday.toLocaleString("id-ID");
 
-    // ===========================
-    // RESPONSIVE FONT
-    // ===========================
-    const FONT_SIZE = window.innerWidth < 600 ? 10 : 13;
+      document.getElementById("selisihValue").textContent =
+          "Rp " + selisih.toLocaleString("id-ID");
 
-    Chart.defaults.font.size = FONT_SIZE;
+      document.getElementById("deviasiValue").textContent =
+          deviasi.toFixed(2) + "%";
 
-    // Update BOX UI
-    document.getElementById("costToday").textContent = "Rp " + biayaToday.toLocaleString("id-ID");
-    document.getElementById("costYesterday").textContent = "Rp " + biayaYesterday.toLocaleString("id-ID");
-    document.getElementById("selisihValue").textContent = "Rp " + selisih.toLocaleString("id-ID");
-    document.getElementById("deviasiValue").textContent = deviasi.toFixed(2) + "%";
+      // ===========================
+      // EXPLAIN BOX
+      // ===========================
+      const explain = document.getElementById("explainBox");
+      const s = Math.abs(selisih).toLocaleString("id-ID");
 
-    const explain = document.getElementById("explainBox");
-    const s = Math.abs(selisih).toLocaleString("id-ID");
+      if (biayaYesterday === 0) {
+          explain.innerHTML = `
+              ⚠️ Tidak ada data kemarin. Deviasi tidak dapat dihitung.
+          `;
+      } else if (selisih < 0) {
+          explain.innerHTML = `
+              📉 Hari ini terjadi <b style="color:red;">penurunan biaya</b> sebesar 
+              <b style="color:red;">Rp ${s}</b> dibandingkan kemarin.<br>
+              Deviasi <b style="color:red;">${deviasi.toFixed(2)}%</b>.
+          `;
+      } else if (selisih > 0) {
+          explain.innerHTML = `
+              📈 Hari ini terjadi <b style="color:green;">kenaikan biaya</b> sebesar 
+              <b style="color:green;">Rp ${s}</b> dibandingkan kemarin.<br>
+              Deviasi <b style="color:green;">${deviasi.toFixed(2)}%</b>.
+          `;
+      } else {
+          explain.innerHTML = `✅ Biaya hari ini sama seperti kemarin.`;
+      }
 
-    if (selisih < 0) {
-        explain.innerHTML = `
-            🧵 Hari ini terjadi <b class="text-red">penurunan biaya</b> sebesar 
-            <b class="text-red">Rp ${s}</b> dibandingkan kemarin.<br>
-            Deviasi <b class="text-red">${deviasi.toFixed(2)}%</b>.
-        `;
-    } else if (selisih > 0) {
-        explain.innerHTML = `
-            📈 Hari ini terjadi <b class="text-green">kenaikan biaya</b> sebesar 
-            <b class="text-green">Rp ${s}</b> dibandingkan kemarin.<br>
-            Deviasi <b class="text-green">${deviasi.toFixed(2)}%</b>.
-        `;
-    } else {
-        explain.innerHTML = `✅ Biaya energi hari ini sama seperti kemarin.`;
-    }
+      // ===========================
+      // RENDER CHART
+      // ===========================
+      const ctx = document.getElementById("energyBarChart");
+      if (!ctx) return;
 
-    // RENDER CHART
-    const ctx = document.getElementById("energyBarChart");
-    if (!ctx) return;
+      const existing = Chart.getChart("energyBarChart");
+      if (existing) existing.destroy();
 
-    const existing = Chart.getChart("energyBarChart");
-    if (existing) existing.destroy();
-
-    new Chart(ctx, {
-        type: "bar",
-        data: {
-            labels: ["Hari Ini"],
-            datasets: [
-                {
-                    label: "Total Energi (kWh)",
-                    data: [energi],
-                    backgroundColor: "#3b82f6",
-                    yAxisID: "yEnergi"
-                },
-                {
-                    label: "Total Biaya (Rp)",
-                    data: [biayaToday],
-                    backgroundColor: "#10b981",
-                    yAxisID: "yBiaya"
-                }
-            ]
-        },
-        plugins: [ChartDataLabels],
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,  // ✅ agar mobile rapi
-            plugins: {
-                legend: { position: "bottom" },
-                datalabels: {
-                    anchor: "center",
-                    align: "center",
-                    color: "white",
-                    font: { weight: "bold", size: window.innerWidth < 600 ? 8 : 12 },
-                    formatter: (value, ctx) => {
-                        if (ctx.dataset.label.includes("Energi"))
-                            return value.toLocaleString("id-ID") + " kWh";
-                        return "Rp " + value.toLocaleString("id-ID");
-                    }
-                }
-            },
-            //layout: {
-            //    padding: { right: 30 }   // ⭐ menampilkan angka Rupiah di mobile
-            //},
-            scales: {
-                yEnergi: {
-                    position: "left",
-                    title: { display: true, text: "kWh" },
-                    ticks: {
-                        callback: v => v.toLocaleString("id-ID")
-                    }
-                },
-                yBiaya: {
-                    //display: window.innerWidth > 600,   // ✅ hilangkan axis kanan di HP
-                    position: "right",
-                    //offset: true,         // ✅ PAKSA tampil di layar kecil
-                    grid: { drawOnChartArea: false },
-                    ticks: {
-                        callback: v => "Rp " + v.toLocaleString("id-ID")
-                    },
-                    title: { display: true, //text: "Rupiah" 
+      new Chart(ctx, {
+          type: "bar",
+          data: {
+              labels: ["Hari Ini"],
+              datasets: [
+                  {
+                      label: "Total Energi (kWh)",
+                      data: [energi],
+                      backgroundColor: "#3b82f6",
+                      yAxisID: "yEnergi"
+                  },
+                  {
+                      label: "Total Biaya (Rp)",
+                      data: [biayaToday],
+                      backgroundColor: "#10b981",
+                      yAxisID: "yBiaya"
+                  }
+              ]
+          },
+          plugins: [ChartDataLabels],
+          options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                  legend: { position: "bottom" },
+                  datalabels: {
+                      anchor: "center",
+                      align: "center",
+                      color: "white",
+                      font: { weight: "bold", size: FONT_SIZE },
+                      formatter: (val, ctx) => {
+                          if (ctx.dataset.label.includes("Energi"))
+                              return val.toLocaleString("id-ID") + " kWh";
+                          return "Rp " + val.toLocaleString("id-ID");
                       }
-                }
-            }
-        }
-    });
-};
+                  }
+              },
+              scales: {
+                  yEnergi: {
+                      position: "left",
+                      title: { display: true, text: "kWh" }
+                  },
+                  yBiaya: {
+                      position: "right",
+                      grid: { drawOnChartArea: false },
+                      ticks: {
+                          callback: v => "Rp " + v.toLocaleString("id-ID")
+                      },
+                      title: { display: true, text: "" }
+                  }
+              }
+          }
+      });
+  };
 
   // === 4️⃣ Prediksi Readiness Besok per Unit (AI Forecast v3.6 Linear) ===
   // window.renderForecastBarChart = function renderForecastBarChart(unitStats, trenData = []) {
