@@ -1,10 +1,33 @@
-{% extends "base.html" %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MyAOCH - Kesiapan Bandara{% endblock %}</title>
 
-{% block title %}Login Operator — MyAOCH x InJourney{% endblock %}
+  <!-- Global Styles -->
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
 
-{% block content %}
-<div class="login-full-bg">
+  {% if "login" in request.path %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+  {% endif %}
+
+  <script src="{% static 'js/app.js' %}" defer></script>
+
+  {% block extra_css %}{% endblock %}
+  {% block extra_head %}{% endblock %}
+
+</head>
+<body>
+
+<div class="layout-wrapper">
+
+    <!-- ✅ Konten utama fleksibel -->
+    <main class="layout-content container">
+      <div class="login-full-bg">
   <div class="overlay"></div>
 
   <div class="login-container fade-in">
@@ -50,4 +73,19 @@
     </div>
   </div>
 </div>
+    </main>
+
+    <!-- ✅ Footer sticky -->
+    <footer class="layout-footer">
+      {% include "includes/footer.html" %}
+    </footer>
+
+</div>
+
+<!-- ✅ Tambahan script -->
+{% block extra_js %}
 {% endblock %}
+
+</body>
+</html>
+

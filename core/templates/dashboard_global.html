@@ -466,13 +466,53 @@
   <!--<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
   <!-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>-->
   <script src="{% static 'js/chartjs-plugin-datalabels.min.js' %}"></script>
+
+
+
   <script src="{% static 'js/dashboard_v3.js' %}"></script>
+
   <script>
-  // Pastikan dipanggil SETELAH file di atas
-  //window.addEventListener("load", () => {
-  //  const data = JSON.parse(document.getElementById("unitStatsData").textContent);
-  //  renderForecastBarChart(data);
-  //});
+    window.energi_today = {{ energi_today }};
+    window.biaya_today = {{ biaya_today }};
+    window.biaya_yesterday = {{ biaya_yesterday }};
+    window.selisih_biaya_today = {{ selisih_biaya_today }};
+    window.deviasi_today = {{ deviasi_today }};
+</script>
+
+<!-- 2️⃣ Script untuk update UI energi -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const rupiah = (num) =>
+        "Rp " + Number(num).toLocaleString("id-ID");
+
+    document.getElementById("costToday").textContent =
+        rupiah(window.energyDataToday);
+
+    document.getElementById("costYesterday").textContent =
+        rupiah(window.energyDataYesterday);
+
+    document.getElementById("selisihValue").textContent =
+        rupiah(window.energyDataSelisih);
+
+    document.getElementById("deviasiValue").textContent =
+        Number(window.energyDataDeviasi).toFixed(2) + "%";
+
+    const explain = document.getElementById("explainBox");
+
+    if (window.energyDataYesterday === 0) {
+        explain.textContent = "⚠️ Tidak ada data kemarin. Deviasi tidak dapat dihitung.";
+    } else if (window.energyDataSelisih > 0) {
+        explain.textContent = `📈 Biaya naik sebesar ${rupiah(window.energyDataSelisih)} dibanding kemarin.`;
+    } else if (window.energyDataSelisih < 0) {
+        explain.textContent = `📉 Biaya turun sebesar ${rupiah(Math.abs(window.energyDataSelisih))} dibanding kemarin.`;
+    } else {
+        explain.textContent = "ℹ️ Biaya energi tidak berubah dibanding kemarin.";
+    }
+});
+</script>
+
+  <script>
   window.addEventListener("load", () => {
     const energy = JSON.parse(document.getElementById("energyData").textContent);
     renderEnergyTodayChart(energy);

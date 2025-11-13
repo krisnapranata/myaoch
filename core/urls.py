@@ -15,17 +15,24 @@ from core.view import (
     api_view,
     auth_views,
     get_biaya_kemarin,
+    # operator
     operator_save_kesiapan,
     operator_save_all,
+    # peralatan
     peralatan_list,
     peralatan_add,
     peralatan_edit,
     peralatan_delete,
-    #     equipment_views,
-    #     peralatan_list,
-    #     peralatan_add,
-    #     peralatan_edit,
-    #     peralatan_delete,
+    ajax_generate_kode,
+    peralatan_detail_json,
+    # energi
+    energi_list,
+    energi_add,
+    energi_edit,
+    energi_delete,
+    energi_detail_json,
+    energy_setting_update,
+
 
 )
 
@@ -84,4 +91,20 @@ urlpatterns = [
     path("peralatan/add/", peralatan_add, name="peralatan_add"),
     path("peralatan/<int:pk>/edit/", peralatan_edit, name="peralatan_edit"),
     path("peralatan/<int:pk>/delete/", peralatan_delete, name="peralatan_delete"),
+    path("peralatan/generate-kode/", ajax_generate_kode, name="ajax_generate_kode"),
+    path("peralatan/<int:pk>/json/", peralatan_detail_json,
+         name="peralatan_detail_json"),
+
+    # Energi
+    path("energi/", energi_list, name="energi_list"),             # LIST
+    path("energi/add/", energi_add, name="energi_add"),          # ADD (POST)
+    path("energi/<int:pk>/edit/", energi_edit, name="energi_edit"),  # EDIT
+    path("energi/<int:pk>/delete/", energi_delete,
+         name="energi_delete"),  # DELETE
+    path("energi/<int:pk>/json/", energi_detail_json,
+         name="energi_detail_json"),  # AJAX JSON
+    path("energi/setting/update/", energy_setting_update,
+         name="energy_setting_update"),
+
+
 ]

@@ -2,20 +2,10 @@
 {% load static %}
 
 {% block content %}
-
 <style>
-
-
-/* RESPONSIVE TOGGLE */
-.desktop-only { display: block; }
-.mobile-only { display: none; }
-
-@media (max-width: 768px) {
-    .desktop-only { display: none; }
-    .mobile-only { display: block; }
-}
-
-/* MAIN WRAPPER */
+/* ==============================
+   GENERAL STYLE
+============================== */
 .equipment-card {
     max-width: 900px;
     margin: auto;
@@ -32,47 +22,174 @@
     margin-bottom: 18px;
 }
 
-/* DESKTOP – Elegant Modern Button */
+/* RESPONSIVE TOGGLE */
+.desktop-only { display: block; }
+.mobile-only { display: none; }
+
+@media (max-width: 768px) {
+    .desktop-only { display: none; }
+    .mobile-only { display: block; }
+}
+
+/* ==============================
+   ADD BUTTON – Compact Blue
+============================== */
 .btn-add {
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    padding: 8px 14px;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    font-weight: 600;
-    font-size: 0.9rem;
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    box-shadow: 0 3px 10px rgba(34, 197, 94, 0.25);
-    transition: 0.2s ease-in-out;
-    margin-left: 14px; /* jarak dari h4 */
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    color: #fff;
+    text-decoration: none;
+    padding: 6px 12px;          /* ⬅️ lebih kecil */
+    border-radius: 8px;         /* ⬅️ sedikit lebih tajam */
+    font-weight: 600;
+    font-size: 0.8rem;          /* ⬅️ kecil tapi masih terbaca jelas */
+    letter-spacing: 0.2px;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+    transition: all 0.2s ease;
+    line-height: 1.1;
 }
 
 .btn-add:hover {
-    background: linear-gradient(135deg, #16a34a, #15803d);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(22, 163, 74, 0.35);
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
 }
 
 .btn-add:active {
     transform: scale(0.97);
 }
 
+.btn-add i {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px;               /* ⬅️ kecil */
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8rem;
+}
 
-/* ✅ MOBILE VERSION – compact & elegant */
+/* ==============================
+   ADD FORM STYLE (Dropdown)
+============================== */
+.add-form-wrapper {
+    display: none;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease;
+    width: 100%;              /* ✅ pastikan penuh dalam card */
+    box-sizing: border-box;   /* ✅ biar padding & border masuk hitungan width */
+    overflow: hidden;         /* ✅ cegah elemen keluar */
+}
+
+.add-form-wrapper.active {
+    display: block;
+}
+
+.add-form-wrapper label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #334155;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.add-form-wrapper .form-control {
+    width: 100%;               /* ✅ biar full dalam card */
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+    box-sizing: border-box;    /* ✅ fix untuk mobile overflow */
+}
+
+/* ✅ Pastikan form mengikuti lebar parent di mobile */
 @media (max-width: 480px) {
-    .btn-add {
-        padding: 6px 10px;
-        font-size: 12px;
+    .add-form-wrapper {
+        padding: 12px;
         border-radius: 8px;
-        gap: 4px;
-        margin-left: 8px;
-        box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
+    }
+
+    .add-form-wrapper .form-control {
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .form-actions button {
+        width: 100%;            /* tombol full di mobile */
     }
 }
 
-/* ========= DESKTOP TABLE ========= */
+/* Buttons */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-save {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-save:hover { background: #2563eb; }
+
+.btn-cancel {
+    background: #e2e8f0;
+    color: #475569;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-cancel:hover { background: #cbd5e1; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================
+   MOBILE VERSION
+============================== */
+@media (max-width: 480px) {
+    .btn-add {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        gap: 4px;
+    }
+    .btn-add i {
+        padding: 3px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ==============================
+   TABLES
+============================== */
 .elegant-table {
     width: 100%;
     border-collapse: separate;
@@ -95,7 +212,6 @@
     padding: 10px;
 }
 
-/* ACTION BUTTONS */
 .act-btn {
     padding: 4px 8px;
     border-radius: 6px;
@@ -106,7 +222,6 @@
 .act-btn.edit { background: #0d6efd; color: white; }
 .act-btn.delete { background: #dc3545; color: white; }
 
-/* ========= MOBILE TABLE COMPACT ========= */
 .mobile-table-wrapper {
     overflow-x: auto;
     padding-bottom: 4px;
@@ -137,17 +252,202 @@
     border-radius: 5px;
 }
 
+/* ==============================
+   HEADER TITLE RESPONSIVE
+============================== */
+.header-row h4 {
+    font-size: 1.1rem;    /* default desktop */
+    color: #1e293b;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .header-row h4 {
+        font-size: 0.95rem;   /* tablet */
+    }
+}
+
+@media (max-width: 480px) {
+    .header-row h4 {
+        font-size: 0.8rem;    /* 📱 hp kecil: lebih kecil & rapi */
+    }
+}
+
+/* ==============================
+   MESSAGES STYLE – Clean Responsive
+============================== */
+.messages {
+    margin-bottom: 14px;
+    animation: fadeInMsg 0.4s ease;
+}
+
+.msg {
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.85rem;        /* ⬅️ lebih kecil dari sebelumnya */
+    font-weight: 500;
+    line-height: 1.3;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.msg.success {
+    background: #e0f2fe;       /* biru muda lembut */
+    color: #075985;            /* biru tua */
+    border: 1px solid #bae6fd;
+}
+
+.msg.error {
+    background: #fee2e2;       /* merah pastel */
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.msg.warning {
+    background: #fef9c3;
+    color: #854d0e;
+    border: 1px solid #fde68a;
+}
+
+/* 🔹 RESPONSIVE untuk HP */
+@media (max-width: 480px) {
+    .msg {
+        font-size: 0.75rem;    /* ⬅️ lebih kecil di HP */
+        padding: 6px 10px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+    }
+}
+
+/* Animasi lembut */
+@keyframes fadeInMsg {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================
+   TOOLBAR SEARCH STYLE
+============================== */
+.toolbar-row {
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.toolbar-search {
+    width: 240px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background-color: #f8fafc;
+    font-size: 0.85rem;
+    color: #334155;
+    transition: all 0.2s ease;
+}
+
+.toolbar-search:focus {
+    outline: none;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+    background-color: #fff;
+}
+
+/* Responsif untuk HP */
+@media (max-width: 480px) {
+    .toolbar-row {
+        justify-content: center;
+    }
+
+    .toolbar-search {
+        width: 100%;
+        font-size: 0.8rem;
+        padding: 6px 8px;
+    }
+}
+
 </style>
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+          {% if 'peralatan' in message.tags %}
+                <div class="msg success">{{ message }}</div>
+            {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- di template sementara -->
+
 <h1 class="page-title">📦 Daftar Peralatan</h1>
 
 <div class="equipment-card">
-
     <div class="header-row">
         <h4 class="fw-bold">List Peralatan Unit {{ request.appuser.unit.nama_unit }}</h4>
-        <a href="{% url 'peralatan_add' %}" class="btn-add">➕ Tambah Peralatan</a>
+        <!-- 💎 Compact Blue Button -->
+        <button id="toggleFormBtn" class="btn-add" type="button">
+            <i>➕</i> Tambah
+        </button>
+    </div>
+    <!-- 🔽 Form Tambah Peralatan (Hidden by default) -->
+    <div id="addFormWrapper" class="add-form-wrapper">
+        <form method="POST" action="{% url 'peralatan_add' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Kode Peralatan</label>
+                <input type="text" name="kode_peralatan" class="form-control"
+                    value="{{ form.kode_peralatan }}" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Nama Peralatan</label>
+                <input type="text" name="nama_peralatan" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label>Jumlah</label>
+                <input type="number" name="jumlah_alat" class="form-control" min="1" value="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Merek</label>
+                <input type="text" name="merk" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Model</label>
+                <input type="text" name="model" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Tahun Pengadaan</label>
+                <input type="number" name="tahun_pengadaan" class="form-control" min="1900" max="2100">
+            </div>
+
+            <div class="form-group">
+                <label>Keterangan</label>
+                <textarea name="keterangan" class="form-control" rows="2"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save">💾 Simpan</button>
+                <button type="button" class="btn-cancel" id="cancelFormBtn">✖ Batal</button>
+            </div>
+        </form>
     </div>
 
-    <!-- ✅ DESKTOP TABLE -->
+    <div class="toolbar-row">
+        <input type="text" id="searchInput" class="toolbar-search"
+            placeholder="🔍 Cari peralatan...">
+    </div>
+
+
+    <!-- Desktop Table -->
     <div class="desktop-only">
         <table class="elegant-table">
             <thead>
@@ -155,18 +455,26 @@
                     <th>Kode</th>
                     <th>Nama Peralatan</th>
                     <th class="center">Jumlah</th>
+                    <th class="center">Merek</th>
+                    <th class="center">Model</th>
+                    <th class="center">Tahun Pengadaan</th>
+                    <th class="center">Keterangan</th>
                     <th class="center">Aksi</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for p in peralatan %}
                 <tr>
                     <td>{{ p.kode_peralatan }}</td>
                     <td>{{ p.nama_peralatan }}</td>
-                    <td class="center">{{ p.jumlah_alat }}</td>
+                    <td>{{ p.jumlah_alat }}</td>
+                    <td>{{ p.merk }}</td>
+                    <td class="center">{{ p.model }}</td>
+                    <td class="center">{{ p.tahun_pengadaan }}</td>
+                    <td class="center">{{ p.keterangan }}</td>
                     <td class="center">
-                        <a href="{% url 'peralatan_edit' p.id %}" class="act-btn edit">✏️</a>
+                        <!--<a href="{% url 'peralatan_edit' p.id %}" class="act-btn edit">✏️</a>-->
+                        <a href="#" class="act-btn edit" data-id="{{ p.id }}">✏️</a>
                         <a href="{% url 'peralatan_delete' p.id %}" class="act-btn delete"
                            onclick="return confirm('Hapus peralatan ini?')">🗑️</a>
                     </td>
@@ -176,8 +484,7 @@
         </table>
     </div>
 
-
-    <!-- ✅ MOBILE TABLE VERSION (Compact) -->
+    <!-- Mobile Table -->
     <div class="mobile-only mobile-table-wrapper">
         <table class="mobile-table">
             <thead>
@@ -195,7 +502,8 @@
                     <td style="text-align:left;">{{ p.nama_peralatan }}</td>
                     <td>{{ p.jumlah_alat }}</td>
                     <td>
-                        <a href="{% url 'peralatan_edit' p.id %}" class="act-btn edit">✏️</a>
+                        <!--<a href="{% url 'peralatan_edit' p.id %}" class="act-btn edit">✏️</a>-->
+                        <a href="#" class="act-btn edit" data-id="{{ p.id }}">✏️</a>
                         <a href="{% url 'peralatan_delete' p.id %}" class="act-btn delete"
                            onclick="return confirm('Hapus peralatan ini?')">🗑️</a>
                     </td>
@@ -204,6 +512,87 @@
             </tbody>
         </table>
     </div>
-
 </div>
+
+<!-- 🔹 Auto-hide messages -->
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.msg').forEach(el => el.style.display = 'none');
+}, 3000);
+</script>
+
+<!-- 🔹 ADD & EDIT form logic -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formWrapper = document.getElementById('addFormWrapper');
+    const toggleBtn = document.getElementById('toggleFormBtn');
+    const cancelBtn = document.getElementById('cancelFormBtn');
+    const form = formWrapper.querySelector('form');
+
+    // ✅ Tambah data
+    toggleBtn.addEventListener('click', () => {
+        form.reset();
+        form.action = "{% url 'peralatan_add' %}";
+        formWrapper.classList.toggle('active');
+
+        fetch("{% url 'ajax_generate_kode' %}")
+            .then(res => res.json())
+            .then(data => {
+                form.querySelector("input[name='kode_peralatan']").value = data.kode;
+            });
+    });
+
+    // ✅ Edit data
+    document.querySelectorAll('.act-btn.edit').forEach(btn => {
+        btn.addEventListener('click', e => {
+            e.preventDefault();
+            const id = btn.dataset.id;
+
+            fetch(`/peralatan/${id}/json/`)
+                .then(res => res.json())
+                .then(data => {
+                    formWrapper.classList.add('active');
+                    form.action = `/peralatan/${id}/edit/`;
+
+                    form.querySelector("input[name='kode_peralatan']").value = data.kode_peralatan;
+                    form.querySelector("input[name='nama_peralatan']").value = data.nama_peralatan;
+                    form.querySelector("input[name='jumlah_alat']").value = data.jumlah_alat;
+                    form.querySelector("input[name='merk']").value = data.merk;
+                    form.querySelector("input[name='model']").value = data.model;
+                    form.querySelector("input[name='tahun_pengadaan']").value = data.tahun_pengadaan;
+                    form.querySelector("textarea[name='keterangan']").value = data.keterangan;
+                });
+        });
+    });
+
+    // ✅ Batal
+    cancelBtn.addEventListener('click', () => {
+        formWrapper.classList.remove('active');
+        form.reset();
+    });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.querySelectorAll('.elegant-table tbody tr, .mobile-table tbody tr');
+
+    searchInput.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(keyword)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+
 {% endblock %}

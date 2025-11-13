@@ -19,21 +19,6 @@ def dashboard_view(request):
     start_dt = timezone.make_aware(
         datetime.combine(start_date, datetime.min.time()))
 
-    # qs = (
-    #     NilaiKesiapan.objects
-    #     .filter(created_at__gte=timezone.make_aware(datetime.combine(start_date, datetime.min.time())))
-    #     .annotate(tgl_agg=TruncDate("created_at"))
-    #     .values("tgl_agg")
-    #     .annotate(avg_nilai=Avg("nilai"))
-    #     .order_by("tgl_agg")
-    # )
-    # qs_dict = {d["tgl_agg"]: float(d["avg_nilai"]) for d in qs}
-    # tren_data = [
-    #     {"tgl_agg": (start_date + timedelta(days=i)).isoformat(),
-    #      "avg_nilai": qs_dict.get(start_date + timedelta(days=i), 0.0)}
-    #     for i in range(7)
-    # ]
-
     # === 🔄 Tren 7 Hari Fix (total_nilai / total_peralatan) ===
     today = timezone.localdate()
     start_date = today - timedelta(days=6)
@@ -314,12 +299,15 @@ def dashboard_view(request):
 
     # Konsumsi Energi
 
+    # ==============================
+    # Ambil 7 data terakhir (untuk chart)
+    # ==============================
     last_7 = KonsumsiEnergi.objects.order_by('-tanggal')[:7][::-1]
 
     energy_data = [
         {
             "tanggal": e.tanggal.strftime("%d %b"),
-            "tanggal_raw": e.tanggal.isoformat(),     # ✅ Tambahan penting!
+            "tanggal_raw": e.tanggal.isoformat(),
             "total_pemakaian": float(e.total_pemakaian_energi),
             "total_biaya": float(e.total_biaya),
             "selisih_biaya": float(e.selisih_pemakaian_biaya),
@@ -329,22 +317,48 @@ def dashboard_view(request):
     ]
 
     # ==============================
-    # ✅ Ambil Hari Ini & Kemarin dari energy_data
+    # ✅ Ambil Hari Ini dari database (record paling baru)
     # ==============================
+    today_entry = KonsumsiEnergi.objects.order_by('-tanggal').first()
 
-    energi_today = energy_data[-1] if len(energy_data) >= 1 else None
-    energi_yesterday = energy_data[-2] if len(energy_data) >= 2 else None
+    if today_entry:
+        tanggal_today = today_entry.tanggal
+        biaya_today = float(today_entry.total_biaya)
+        total_energi_today = float(today_entry.total_pemakaian_energi)
+    else:
+        tanggal_today = None
+        biaya_today = 0
+        total_energi_today = 0
 
-    # Safe handling jika tidak ada data
-    total_energi_today = energi_today["total_pemakaian"] if energi_today else 0
-    biaya_today = energi_today["total_biaya"] if energi_today else 0
+    # ==============================
+    # ✅ Ambil data KEMARIN (tanggal_today - 1 hari)
+    # ==============================
+    if tanggal_today:
+        tanggal_kemarin = tanggal_today - timedelta(days=1)
+        yesterday_entry = KonsumsiEnergi.objects.filter(
+            tanggal=tanggal_kemarin
+        ).first()
+    else:
+        yesterday_entry = None
 
-    biaya_yesterday = energi_yesterday["total_biaya"] if energi_yesterday else 0
+    # ==============================
+    # LOGIKA PERSIS SEPERTI MODEL
+    # ==============================
+    if yesterday_entry:
+        biaya_yesterday = float(yesterday_entry.total_biaya)
+    else:
+        biaya_yesterday = 0
 
     selisih_biaya = biaya_today - biaya_yesterday
-    deviasi = (selisih_biaya / biaya_yesterday * 100) if biaya_yesterday else 0
 
-    # ✅ Tanggal terakhir tersedia
+    if yesterday_entry and biaya_yesterday > 0:
+        deviasi = (selisih_biaya / biaya_yesterday) * 100
+    else:
+        deviasi = 0
+
+    # ==============================
+    # Format tanggal terakhir (untuk card)
+    # ==============================
     last_date_str = last_7[-1].tanggal.strftime(
         "%d %B %Y") if last_7 else "Tidak ada data"
 
@@ -356,7 +370,8 @@ def dashboard_view(request):
     # print(round(sum([u["rata_nilai"]
     #                  for u in unit_stats]) / len(unit_stats), 2))
     # print(total_units)
-    # === Context ===
+    # === Context ==
+
     context = {
         "unit_stats": list(unit_stats),
         "kategori_counts": list(kategori_counts),
@@ -383,3 +398,4 @@ def dashboard_view(request):
     # print("UNIT ", context["unit_stats"])
 
     return render(request, "dashboard_global.html", context)
+    # return render(request, "new_dashboard_global.html", context)

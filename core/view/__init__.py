@@ -5,3 +5,4 @@ from .gm_views import *
 from .dashboard_views import *
 from .api_views import *
 from .peralatan_views import *
+from .energi_views import *

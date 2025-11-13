@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/konsumsi_energi.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+          {% if 'energi' in message.tags %}
+                <div class="msg success">{{ message }}</div>
+            {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+
+<h1 class="page-title">⚡ Konsumsi Energi</h1>
+
+<div class="equipment-card">
+
+   <div class="header-row">
+
+        <!-- Tombol Input -->
+        <button id="toggleFormBtn" class="btn-add" type="button">
+            <i>➕</i> Input
+        </button>
+
+        <!-- Tombol Gear Setting -->
+        <button id="toggleSettingBtn" class="btn-setting" type="button">
+            <i class="bi bi-gear-fill"></i> Setting
+        </button>
+
+    </div>
+
+    <!-- DROPDOWN SETTING ENERGI -->
+    <div id="settingWrapper" class="add-form-wrapper">
+
+        <form method="POST" action="{% url 'energy_setting_update' %}">
+            {% csrf_token %}
+
+            <label>Nama Bandara</label>
+            <input type="text" name="nama_bandara" class="form-control"
+                value="{{ setting.nama_bandara }}">
+
+            <label>Faktor Kali KWH</label>
+            <input type="number" step="0.01" name="faktor_kali_kwh" class="form-control"
+                value="{{ setting.faktor_kali_kwh }}">
+
+            <label>Harga LWBP</label>
+            <input type="number" step="0.01" name="harga_lwbp" class="form-control"
+                value="{{ setting.harga_lwbp }}">
+
+            <label>Harga WBP</label>
+            <input type="number" step="0.01" name="harga_wbp" class="form-control"
+                value="{{ setting.harga_wbp }}">
+
+            <label>Batas Pemakaian Harian</label>
+            <input type="number" step="0.01" name="batas_pemakaian_harian" class="form-control"
+                value="{{ setting.batas_pemakaian_harian }}">
+
+            <div class="form-actions">
+                <button class="btn-save">💾 Simpan Setting</button>
+                <button type="button" id="cancelSettingBtn" class="btn-cancel">✖ Batal</button>
+            </div>
+        </form>
+
+    </div>
+    <!-- FORM INPUT -->
+    <div id="addFormWrapper" class="add-form-wrapper">
+        <form id="energyForm" method="POST">
+            {% csrf_token %}
+
+            <label>Tanggal</label>
+            <input type="date" name="tanggal" class="form-control" required>
+
+            <label>Stand Awal LWBP</label>
+            <input type="number" step="0.01" name="awal_lwbp" class="form-control">
+
+            <label>Stand Akhir LWBP</label>
+            <input type="number" step="0.01" name="akhir_lwbp" class="form-control">
+
+            <label>Stand Awal WBP</label>
+            <input type="number" step="0.01" name="awal_wbp" class="form-control">
+
+            <label>Stand Akhir WBP</label>
+            <input type="number" step="0.01" name="akhir_wbp" class="form-control">
+
+            <div class="form-actions">
+                <button class="btn-save">💾 Simpan</button>
+                <button type="button" id="cancelFormBtn" class="btn-cancel">✖ Batal</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="toolbar-row">
+        <input type="text" id="searchInput" class="toolbar-search"
+               placeholder="🔍 Cari data energi...">
+    </div>
+
+    <!-- TABLE DESKTOP -->
+    <div class="desktop-only">
+        <table class="elegant-table">
+            <thead>
+                <tr>
+                    <th>Tgl</th>
+                    <th>KWH</th>
+                    <th>Biaya</th>
+                    <th>Selisih</th>
+                    <th>Deviasi</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in data %}
+            <tr>
+                <td>{{ e.tanggal }}</td>
+                <td>{{ e.total_pemakaian_energi|floatformat:0 }}</td>
+                <td>Rp {{ e.total_biaya|floatformat:0 }}</td>
+                <td>Rp {{ e.selisih_pemakaian_biaya|floatformat:0 }}</td>
+                <td>{{ e.deviasi_pemakaian_persen|floatformat:2 }}%</td>
+                <td class="center">
+                    <a href="#" class="act-btn edit" data-id="{{ e.id }}">✏️</a>
+                    <a href="{% url 'energi_delete' e.id %}" class="act-btn delete"
+                       onclick="return confirm('Hapus data ini?')">🗑️</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- MOBILE TABLE -->
+    <div class="mobile-only mobile-table-wrapper">
+        <table class="mobile-table">
+            <thead>
+                <tr>
+                    <th>Tgl</th>
+                    <th>KWH</th>
+                    <th>Biaya</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in data %}
+            <tr>
+                <td>{{ e.tanggal }}</td>
+                <td>{{ e.total_pemakaian_energi|floatformat:0 }}</td>
+                <td>Rp {{ e.total_biaya|floatformat:0 }}</td>
+                <td>
+                    <a href="#" class="act-btn edit" data-id="{{ e.id }}">✏️</a>
+                    <a href="{% url 'energi_delete' e.id %}" class="act-btn delete"
+                       onclick="return confirm('Hapus data ini?')">🗑️</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+<!-- AUTO HIDE MESSAGE -->
+<script>
+setTimeout(() => {
+    document.querySelectorAll('.msg').forEach(el => el.style.display = 'none');
+}, 3000);
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const wrapper = document.getElementById("addFormWrapper");
+    const toggleBtn = document.getElementById("toggleFormBtn");
+    const cancelBtn = document.getElementById("cancelFormBtn");
+    const form = document.getElementById("energyForm");
+
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+    /* =====================================================
+       BUTTON ADD → buka form kosong
+    ====================================================== */
+    toggleBtn.addEventListener("click", () => {
+        form.reset();
+        form.action = "{% url 'energi_add' %}";
+        wrapper.classList.toggle("active");
+
+        // refresh token
+        form.querySelector("[name=csrfmiddlewaretoken]").value = csrfToken;
+    });
+
+
+    /* =====================================================
+       BUTTON CANCEL → tutup form
+    ====================================================== */
+    cancelBtn.addEventListener("click", () => {
+        wrapper.classList.remove("active");
+    });
+
+
+    /* =====================================================
+       EDIT MODE (AJAX load)
+    ====================================================== */
+    document.querySelectorAll(".act-btn.edit").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+
+            fetch(`/energi/${btn.dataset.id}/json/`)
+                .then(res => res.json())
+                .then(data => {
+                    wrapper.classList.add("active");
+                    form.reset();
+
+                    form.action = `/energi/${btn.dataset.id}/edit/`;
+
+                    // always set fresh CSRF token
+                    form.querySelector("[name=csrfmiddlewaretoken]").value = csrfToken;
+
+                    form.querySelector("[name='tanggal']").value = data.tanggal;
+                    form.querySelector("[name='awal_lwbp']").value = data.stand_awal_lwbp;
+                    form.querySelector("[name='akhir_lwbp']").value = data.stand_akhir_lwbp;
+                    form.querySelector("[name='awal_wbp']").value = data.stand_awal_wbp;
+                    form.querySelector("[name='akhir_wbp']").value = data.stand_akhir_wbp;
+                });
+        });
+    });
+
+
+    /* =====================================================
+       SEARCH
+    ====================================================== */
+    const searchInput = document.getElementById("searchInput");
+    const rows = document.querySelectorAll(".elegant-table tbody tr, .mobile-table tbody tr");
+
+    searchInput.addEventListener("input", () => {
+        const key = searchInput.value.toLowerCase();
+        rows.forEach(row => {
+            row.style.display = row.textContent.toLowerCase().includes(key) ? "" : "none";
+        });
+    });
+
+});
+</script>
+
+<!-- SEARCH -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('searchInput');
+    const rows = document.querySelectorAll('.elegant-table tbody tr, .mobile-table tbody tr');
+
+    input.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(keyword) ? '' : 'none';
+        });
+    });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    const settingBox = document.getElementById("settingWrapper");
+    const settingBtn = document.getElementById("toggleSettingBtn");
+    const cancelSettingBtn = document.getElementById("cancelSettingBtn");
+
+    const inputBox = document.getElementById("addFormWrapper");
+    const inputBtn = document.getElementById("toggleFormBtn");
+
+    /* ================================
+       BUKA SETTING → tutup INPUT
+    ================================ */
+    settingBtn.addEventListener("click", () => {
+        inputBox.classList.remove("active");   // ⬅️ close Input
+        settingBox.classList.toggle("active");
+    });
+
+    cancelSettingBtn.addEventListener("click", () => {
+        settingBox.classList.remove("active");
+    });
+
+    /* ================================
+       BUKA INPUT → tutup SETTING
+    ================================ */
+    inputBtn.addEventListener("click", () => {
+        settingBox.classList.remove("active");  // ⬅️ close Setting
+    });
+
+});
+</script>
+
+{% endblock %}

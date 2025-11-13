@@ -1,0 +1,37 @@
+  {% load static %}
+
+  <nav class="navbar">
+    <div class="navbar-left">
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+
+    <img src="{% static 'img/logo-aoch.png' %}" alt="MyAoCH Logo" class="logo">
+    
+    <div class="brand-block">
+        <span class="brand">MyAOCH v2</span>
+        <span class="nav-username">
+        </span>
+    </div>
+</div>
+
+    <!-- Navbar Menu -->
+    <div class="navbar-right" id="navbarMenu">
+      {% if request.appuser.unit.nama_unit == "Electrical" %}
+      <a href="{% url 'dashboard' %}">🏠 Dashboard</a>
+      <a href="{% url 'operator_dashboard' %}">👷 Readiness</a>
+      <a href="{% url 'operator_dashboard' %}">⚡ Energy</a>
+      <a href="{% url 'peralatan_list' %}">⚙️ Equipment</a>
+      <a href="{% url 'portal_logout' %}">🚪 Logout</a>
+       {% else %}
+       <a href="{% url 'dashboard' %}">🏠 Dashboard</a>
+      <a href="{% url 'operator_dashboard' %}">👷 Readiness</a>
+      <a href="{% url 'peralatan_list' %}">⚙️ Equipment</a>
+      <a href="{% url 'portal_logout' %}">🚪 Logout</a>
+      {% endif %}
+    </div>
+  </nav>
+
+

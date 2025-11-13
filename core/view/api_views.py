@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.db.models import Avg, Count, F, Max, Sum, FloatField, ExpressionWrapper, OuterRef, Subquery
 from django.db.models.functions import TruncDate
 from core.models import NilaiKesiapan, Peralatan, KonsumsiEnergi, Unit
+from django.contrib.auth.decorators import login_required
 
 import numpy as np
 from sklearn.linear_model import LinearRegression  # 🔹 Tambahan
