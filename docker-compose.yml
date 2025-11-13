@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  db:
+    image: mariadb:10.6
+    container_name: myaoch-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: superrootpass
+      MYSQL_DATABASE: myaoch
+      MYSQL_USER: sik
+      MYSQL_PASSWORD: myaochpass
+    volumes:
+      - db_data:/var/lib/mysql
+
+  web:
+    build: .
+    container_name: myaoch-web
+    command: gunicorn myaoch.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+      - ./static:/app/static
+      - ./media:/app/media
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  db_data:
