@@ -36,7 +36,13 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = ['192.168.1.10', '192.168.101.154', '192.168.0.108',
 #  'localhost', '127.0.0.1', '10.138.65.72', '192.168.17.182']
-
+CSRF_TRUSTED_ORIGINS = [
+    "http://36.67.127.104",
+    "http://lop-aoch.online",
+    "http://aoch-lop.cloud",
+    "https://lop-aoch.online",
+    "https://aoch-lop.cloud",
+]
 
 # Application definition
 
