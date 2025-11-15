@@ -156,6 +156,7 @@
 {% endblock %}
 
 {% block extra_js %}
+ {{ block.super }}
 <script>
 /* SAVE PER BARIS */
 document.querySelectorAll(".btn-save-row").forEach(btn => {

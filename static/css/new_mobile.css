@@ -4,7 +4,8 @@ position:fixed;
 left:0px;
 right:0px;
 bottom:0px;
-background:var(--primary);
+/* background:var(--primary); */
+background:rgba(19, 35, 95, 0.95);
 display:flex;
 justify-content:space-around;
 padding:8px;

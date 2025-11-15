@@ -20,13 +20,13 @@ def login_view(request):
                 return redirect("dashboard")
             elif user.role == "SPV":
                 # return redirect("spv_dashboard")
-                return redirect("dashboard")
+                return redirect("/spv/dashboard")
             elif user.role == "AOCH":
                 # return redirect("aoch_dashboard")
-                return redirect("dashboard")
+                return redirect("/aoch/dashboard")
             elif user.role == "GM":
                 # return redirect("gm_dashboard")
-                return redirect("dashboard")
+                return redirect("/gm/dashboard")
             else:
                 # return redirect("portal_dashboard")
                 return redirect("dashboard")

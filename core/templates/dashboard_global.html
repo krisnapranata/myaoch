@@ -159,7 +159,7 @@
 {% endblock %}
 
 {% block extra_js %}
-  
+  {{ block.super }}
   <script src="{% static 'js/chart.min.js' %}"></script>
   {#  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@2.0.0"></script>  #}
   <!-- Auto-refresh data API -->

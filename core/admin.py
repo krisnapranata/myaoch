@@ -41,32 +41,12 @@ class AppUserAdmin(admin.ModelAdmin):
     list_display = ('id', 'nama_lengkap', 'username',
                     'role', 'unit', 'is_active')
     search_fields = ('nama_lengkap', 'username', 'email')
-    list_filter = ('role', 'is_active')
+    list_filter = ('role', 'unit', 'is_active')
 
-    @property
-    def is_operator(self):
-        return self.role == "Operator"
-
-    @property
-    def is_spv(self):
-        return self.role == "SPV"
-
-    @property
-    def is_aoch(self):
-        return self.role == "AOCH"
-
-    @property
-    def is_gm(self):
-        return self.role == "GM"
-
-    @property
-    def is_admin(self):
-        return self.role == "Admin"
-
-    @property
-    def is_privileged(self):
-        """Admin, AOCH, dan GM dapat melihat semua unit."""
-        return self.role in ["Admin", "AOCH", "GM"]
+    def save_model(self, request, obj, form, change):
+        # Jalankan validasi model (clean)
+        obj.clean()
+        super().save_model(request, obj, form, change)
 
 
 # ==============================

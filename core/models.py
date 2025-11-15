@@ -44,6 +44,40 @@ class AppUser(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    @property
+    def is_operator(self):
+        return self.role == "Operator"
+
+    @property
+    def is_spv(self):
+        return self.role == "SPV"
+
+    @property
+    def is_aoch(self):
+        return self.role == "AOCH"
+
+    @property
+    def is_gm(self):
+        return self.role == "GM"
+
+    @property
+    def is_admin(self):
+        return self.role == "Admin"
+
+    @property
+    def is_privileged(self):
+        """Admin, AOCH, dan GM dapat melihat semua unit."""
+        return self.role in ["Admin", "AOCH", "GM"]
+
+    def clean(self):
+        # Validasi Unit wajib untuk role tertentu
+        if self.role in ["Operator", "SPV"] and not self.unit:
+            raise ValidationError({
+                "unit": "Operator & SPV wajib memiliki unit."
+            })
+
+        # AOCH & GM boleh tanpa unit → NO ERROR
+
     def __str__(self):
         return f"{self.nama_lengkap} ({self.role})"
 
@@ -110,6 +144,24 @@ class NilaiKesiapan(models.Model):
         AppUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='input_by')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    verifikator_spv = models.ForeignKey(
+        AppUser, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="verif_spv"
+    )
+
+    verifikator_aoch = models.ForeignKey(
+        AppUser, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="verif_aoch"
+    )
+
+    verifikator_gm = models.ForeignKey(
+        AppUser, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="verif_gm"
+    )
 
     def clean(self):
         """Validasi logika jumlah alat normal tidak boleh melebihi total alat."""
@@ -251,6 +303,17 @@ class Notifikasi(models.Model):
     jenis = models.CharField(
         max_length=30, choices=JENIS_CHOICES, default='Kesiapan')
     status_baca = models.BooleanField(default=False)
+    # Metadata helpful for linking / filtering
+    related_model = models.CharField(
+        max_length=50, null=True, blank=True)   # e.g. 'NilaiKesiapan'
+    related_id = models.IntegerField(null=True, blank=True)
+    # relative url to detail
+    link = models.CharField(max_length=255, null=True, blank=True)
+    target_role = models.CharField(
+        max_length=20, null=True, blank=True)    # e.g. 'SPV'
+    unit = models.ForeignKey(
+        'Unit', on_delete=models.SET_NULL, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

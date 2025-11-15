@@ -1,38 +1,128 @@
-  {% load static %}
+{% load static %}
+<style>
+  /* ==========================================
+    🔔 FIX BELL + BADGE (FINAL 100% BERFUNGSI)
+    Menghilangkan absolute bootstrap
+    dan menggantinya dengan posisi fixed
+  ========================================== */
 
-  <nav class="navbar">
-    <div class="navbar-left">
+  /* Bell icon */
+  #notifBtn {
+      position: fixed !important;
+      top: 14px !important;
+      right: 52px !important;
+      z-index: 99999 !important;
+  }
+
+  /* INI YANG PALING PENTING:
+    Buang absolute-nya bootstrap agar tidak tertinggal */
+  #notifCount {
+      position: fixed !important;       /* <— BUKAN absolute lagi */
+      inset: unset !important;          /* hapus aturan top/right bawaan bootstrap */
+      top: 8px !important;
+      right: 40px !important;
+      z-index: 100000 !important;
+      transform: none !important;       /* buang translate bootstrap */
+  }
+
+  /* Dropdown */
+  #notifDropdown {
+      position: fixed !important;
+      top: 56px !important;
+      right: 16px !important;
+      width: 330px !important;
+      max-height: 420px !important;
+      overflow-y: auto;
+      z-index: 9999 !important;
+  }
+
+  /* hilangkan efek posisi dari parent */
+  .navbar-left .dropdown {
+      position: static !important;
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+      #notifBtn {
+          right: 48px !important;
+      }
+      #notifCount {
+          right: 36px !important;  /* ikut menyesuaikan mobile */
+      }
+      #notifDropdown {
+          right: 10px !important;
+          width: calc(100vw - 20px) !important;
+      }
+  }
+  /* Judul notif selalu gelap */
+  #notifList .fw-semibold {
+      color: #000 !important;
+  }
+
+  /* Pesan notif abu gelap */
+  #notifList .small.text-muted {
+      color: #555 !important;
+  }
+</style>
+
+<nav class="navbar">
+  <div class="navbar-left">
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
       <span class="bar"></span>
       <span class="bar"></span>
       <span class="bar"></span>
     </button>
 
-    <img src="{% static 'img/logo-aoch.png' %}" alt="MyAoCH Logo" class="logo">
-    
-    <div class="brand-block">
-        <span class="brand">MyAOCH v2</span>
-        <span class="nav-username">
-        </span>
-    </div>
-</div>
+    <img src="{% static 'img/logo-aoch.png' %}" alt="MyAOCH Logo" class="logo-aoch">
 
-    <!-- Navbar Menu -->
-    <div class="navbar-right" id="navbarMenu">
-      {% if request.appuser.unit.nama_unit == "Electrical" %}
+    <div class="brand-block">
+        <span class="brand"></span>
+        <span class="nav-username"></span>
+    </div>
+
+    <!-- 🔔 NOTIFICATION BELL -->
+    <div class="dropdown" style="position: relative; margin-left: 15px;">
+      <a class="nav-link position-relative text-white" id="notifBtn" data-bs-toggle="dropdown" role="button" style="cursor:pointer;">
+        <i class="bi bi-bell fs-4"></i>
+
+        <span id="notifCount"
+              class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill"
+              style="display:none;">
+        </span>
+      </a>
+
+      <div class="dropdown-menu dropdown-menu-end p-0 shadow"
+           id="notifDropdown"
+           style="min-width:360px; max-height:420px; overflow:auto;">
+
+        <div class="p-3 border-bottom fw-bold bg-light d-flex justify-content-between align-items-center">
+          <span>Notifikasi</span>
+          <button id="markAllReadBtn" class="btn btn-sm btn-link">Tandai semua</button>
+        </div>
+
+        <div id="notifList" style="max-height:360px; overflow-y:auto;">
+        </div>
+
+        <div class="text-center py-3 text-muted" id="notifEmpty" style="display:none;">
+          Tidak ada notifikasi baru
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="navbar-right" id="navbarMenu">
+
+    {% if request.appuser.unit.nama_unit == "Electrical" %}
       <a href="{% url 'dashboard' %}">🏠 Dashboard</a>
       <a href="{% url 'operator_dashboard' %}">👷 Readiness</a>
       <a href="{% url 'energi_list' %}">⚡ Energy</a>
       <a href="{% url 'peralatan_list' %}">⚙️ Equipment</a>
-      <a href="{% url 'portal_logout' %}">🚪 Logout</a>
-       {% else %}
-       <a href="{% url 'dashboard' %}">🏠 Dashboard</a>
+    {% else %}
+      <a href="{% url 'dashboard' %}">🏠 Dashboard</a>
       <a href="{% url 'operator_dashboard' %}">👷 Readiness</a>
       <a href="{% url 'peralatan_list' %}">⚙️ Equipment</a>
-      <a href="{% url 'portal_logout' %}">🚪 Logout</a>
-      {% endif %}
-    </div>
-  </nav>
+    {% endif %}
+    <a href="{% url 'portal_logout' %}">🚪 Logout</a>
 
-  
-
+  </div>
+</nav>

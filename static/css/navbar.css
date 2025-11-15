@@ -1,6 +1,6 @@
 /* ===========================
    🌙 Elegant InJourney Navbar - Full Final Version
-   by Krisna & GPT-5 😎
+   FIX bell turun di mobile
 =========================== */
 
 /* --- Reset & Base --- */
@@ -16,8 +16,8 @@ html, body {
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* 🔹 Semua item ke kiri */
-  background: rgba(29, 78, 216, 0.9);
+  justify-content: space-between !important; /* 🟦 FIX utama bell di kanan */
+  background: rgba(250, 250, 252, 0.9);
   backdrop-filter: blur(10px);
   padding: 10px 16px;
   color: white;
@@ -25,7 +25,7 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 1000;
-  gap: 10px; /* jarak kecil antar elemen biar nggak nempel */
+  gap: 10px;
 }
 
 /* --- Grup Kiri: Hamburger, Logo, Brand --- */
@@ -35,23 +35,35 @@ html, body {
   justify-content: flex-start;
   flex-wrap: nowrap;
   gap: 10px;
+
+  flex: 1 1 auto;  /* 🟦 FIX kiri nggak memakan seluruh ruang */
+  min-width: 0;    /* 🟦 FIX supaya brand shrink dan bell tidak turun */
 }
 
-/* --- Hamburger di kiri logo --- */
+/* brand auto shrink */
+.brand-block {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Hamburger --- */
 .menu-toggle {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   width: 26px;
-  height: 20px;
+  height: 22px;
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 6px; /* jarak kecil dengan logo */
+  margin-right: 6px;
   z-index: 1600;
   transition: transform 0.3s ease;
+  margin-top: -50px;
 }
+
 
 .menu-toggle .bar {
   height: 3px;
@@ -59,9 +71,10 @@ html, body {
   background: white;
   border-radius: 2px;
   transition: all 0.3s ease;
+  
 }
 
-/* --- Animasi ke bentuk X --- */
+/* Animasi ke bentuk X */
 .menu-toggle.open .bar:nth-child(1) {
   transform: rotate(45deg) translate(4px, 4px);
 }
@@ -84,7 +97,7 @@ html, body {
   margin-left: 4px;
 }
 
-/* --- Navbar Right (Sidebar) tetap seperti sebelumnya --- */
+/* --- Sidebar Kanan (navbar-right) --- */
 .navbar-right {
   position: fixed;
   top: 0;
@@ -136,7 +149,7 @@ html, body {
   transform: translateX(6px);
 }
 
-/* --- Overlay Gelap Saat Sidebar Terbuka --- */
+/* --- Overlay Saat Sidebar Terbuka --- */
 body.sidebar-open {
   overflow: hidden;
 }
@@ -178,4 +191,31 @@ body.sidebar-open::before {
   .navbar-right a {
     font-size: 0.95rem;
   }
+}
+
+/* ===========================
+   🔔 FIX Notifikasi & Bell
+=========================== */
+
+/* Dropdown notifikasi fix ke kanan */
+#notifDropdown {
+    position: fixed !important;
+    top: 65px !important;
+    right: 20px !important;
+    z-index: 99999 !important;
+
+    width: 360px !important;
+    max-height: 420px !important;
+    overflow-y: auto;
+}
+
+/* Bell tetap di kanan */
+#notifBtn {
+    position: relative;
+    z-index: 100000;
+}
+
+/* Badge tetap di atas bell */
+#notifCount {
+    z-index: 200000;
 }

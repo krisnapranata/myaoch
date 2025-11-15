@@ -5,19 +5,31 @@ from core.view import (
     operator_dashboard,
     input_kesiapan,
     operator_history,
+
+    # spv
     spv_dashboard,
-    verifikasi_spv,
+    spv_verifikasi,
+    spv_verifikasi_semua,
+
+    # aoch
     aoch_dashboard,
-    laporan_aoch,
+    aoch_verifikasi,
+    aoch_verifikasi_semua,
+
+    # gm
     gm_dashboard,
-    gm_laporan,
+    gm_verifikasi,
+    gm_verifikasi_semua,
+
     dashboard_view,
     api_view,
     auth_views,
     get_biaya_kemarin,
+
     # operator
     operator_save_kesiapan,
     operator_save_all,
+
     # peralatan
     peralatan_list,
     peralatan_add,
@@ -25,6 +37,7 @@ from core.view import (
     peralatan_delete,
     ajax_generate_kode,
     peralatan_detail_json,
+
     # energi
     energi_list,
     energi_add,
@@ -32,6 +45,11 @@ from core.view import (
     energi_delete,
     energi_detail_json,
     energy_setting_update,
+
+    # notif
+    notif_count,
+    notif_list,
+    notif_mark_read,
 
 
 )
@@ -58,16 +76,21 @@ urlpatterns = [
          name="operator_save_all"),
 
     # SPV
-    path('spv/dashboard/', spv_dashboard, name='dashboard_spv'),
-    path('spv/verifikasi/', verifikasi_spv, name='verifikasi_spv'),
+    path("spv/dashboard/", spv_dashboard, name="dashboard_spv"),
+    path("spv/verifikasi/<int:pk>/", spv_verifikasi, name="spv_verifikasi"),
+    path("spv/verifikasi-semua/", spv_verifikasi_semua,
+         name="spv_verifikasi_semua"),
 
     # AOCH
-    path('aoch/dashboard/', aoch_dashboard, name='dashboard_aoch'),
-    path('aoch/laporan/', laporan_aoch, name='laporan_aoch'),
+    path("aoch/dashboard/", aoch_dashboard, name="dashboard_aoch"),
+    path("aoch/verifikasi/<int:pk>/", aoch_verifikasi, name="aoch_verifikasi"),
+    path("aoch/verifikasi-semua/", aoch_verifikasi_semua,
+         name="aoch_verifikasi_semua"),
 
     # GM
-    path('gm/dashboard/', gm_dashboard, name='dashboard_gm'),
-    path('gm/laporan/', gm_laporan, name='gm_laporan'),
+    path("gm/dashboard/", gm_dashboard, name="dashboard_gm"),
+    path("gm/verifikasi/<int:pk>/", gm_verifikasi, name="gm_verifikasi"),
+    path("gm/verifikasi-semua/", gm_verifikasi_semua, name="gm_verifikasi_semua"),
 
     # Dashboard Umum
     # path('dashboard/', dashboard_global, name='dashboard_global'),
@@ -105,6 +128,11 @@ urlpatterns = [
          name="energi_detail_json"),  # AJAX JSON
     path("energi/setting/update/", energy_setting_update,
          name="energy_setting_update"),
+
+    # Notififikasi
+    path('notifications/count/', notif_count, name='notif-count'),
+    path('notifications/list/', notif_list, name='notif-list'),
+    path('notifications/mark-read/', notif_mark_read, name='notif-mark-read'),
 
 
 ]

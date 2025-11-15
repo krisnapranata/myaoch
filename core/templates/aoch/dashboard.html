@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}AOCH Dashboard{% endblock %}
+
+{% block content %}
+
+<h3>🛫 AOCH</h3>
+
+<div class="card p-3 shadow-sm rounded">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5>Peralatan Diverifikasi SPV</h5>
+
+        <a href="{% url 'aoch_verifikasi_semua' %}"
+           class="btn btn-primary btn-sm">✔ Verifikasi Semua</a>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Unit</th>
+                <th>Peralatan</th>
+                <th>Nilai</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for i in items %}
+            <tr>
+                <td>{{ i.peralatan.unit.nama_unit }}</td>
+                <td>{{ i.peralatan.nama_peralatan }}</td>
+                <td>{{ i.nilai }}%</td>
+                <td>
+                    <a class="btn btn-success btn-sm"
+                       href="{% url 'aoch_verifikasi' i.id %}">✔</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">
+                    Tidak ada data
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

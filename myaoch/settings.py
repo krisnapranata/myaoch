@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Aplikasi utama
-    'core',
+    # 'core',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [

@@ -32,7 +32,8 @@ body {
    🧭 Navbar
 ===================== */
 .navbar {
-  background: var(--primary);
+  /* background: var(--primary-dark) !important; */
+  background: rgba(19, 35, 95, 0.95);
   color: white;
   display: flex;
   justify-content: space-between;
@@ -42,6 +43,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 1000;
+  height: 60px;
 }
 
 .navbar-left {
@@ -72,6 +74,13 @@ body {
   height: 40px;
   margin-right: 12px;
   vertical-align: middle;
+}
+
+.logo-aoch {
+  height: 120px;
+  width: 150px;
+  margin-top: -40px;
+  margin-left: -20px;
 }
 
 /* =====================
